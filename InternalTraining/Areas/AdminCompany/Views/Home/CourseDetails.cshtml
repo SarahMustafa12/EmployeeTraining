@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-﻿@model InternalTraining.Models.BookingCourse
+@model InternalTraining.Models.BookingCourse
 
 @{
     ViewData["Title"] = "Course Details";
@@ -22,7 +21,7 @@
             <div class="container-fluid">
                 <div class="row">
 
-                    <!-- 🎥 Video Area -->
+                    <!-- Video Player -->
                     <div class="col-lg-8 mb-4">
                         <div id="video-container" class="rounded-3 shadow-sm mb-3 bg-dark position-relative" style="height: 480px;">
                             <div id="video-spinner" class="position-absolute top-50 start-50 translate-middle d-none">
@@ -31,7 +30,6 @@
                                 </div>
                             </div>
 
-                            @* Load first lesson *@
                             @{
                                 var firstLesson = chapters.SelectMany(c => c.Lessons).FirstOrDefault(l => !string.IsNullOrEmpty(l.ContentUrl));
                                 if (firstLesson != null)
@@ -41,7 +39,7 @@
 
                                     if (url.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase))
                                     {
-                                        videoHtml = $"<video class='w-100 h-100' controls onloadeddata='hideSpinner()'><source src='{url}' type='video/mp4'></video>";
+                                        videoHtml = $"<video id='currentVideo' class='w-100 h-100' controls onloadeddata='hideSpinner()'><source src='{url}' type='video/mp4'></video>";
                                     }
                                     else if (url.Contains("youtube.com") || url.Contains("youtu.be"))
                                     {
@@ -49,10 +47,13 @@
                                         ? url.Split("watch?v=")[1].Split('&')[0]
                                         : url.Split("youtu.be/")[1].Split('?')[0];
                                         var embedUrl = $"https://www.youtube.com/embed/{embedId}";
-                                        videoHtml = $"<iframe src='{embedUrl}' onload='hideSpinner()' style='position:absolute;top:0;left:0;width:100%;height:100%;' frameborder='0' allowfullscreen></iframe>";
+                                        videoHtml = $"<iframe id='currentVideo' src='{embedUrl}' onload='hideSpinner()' style='position:absolute;top:0;left:0;width:100%;height:100%;' frameborder='0' allowfullscreen></iframe>";
                                     }
-
                                     @Html.Raw(videoHtml)
+                                }
+                                else
+                                {
+                                    <div class="text-white p-4">No lessons available.</div>
                                 }
                             }
                         </div>
@@ -69,11 +70,9 @@
                         </div>
                     </div>
 
-                    <!-- 📚 Sidebar -->
+                    <!-- Sidebar: Chapters and Lessons -->
                     <div class="col-lg-4">
                         <div class="position-sticky" style="top: 80px;">
-
-                            <!-- Course Info -->
                             <div class="mb-4">
                                 <div class="card-body">
                                     <h2 class="text-white py-2 px-3 rounded" style="background-color:#143D60">
@@ -83,12 +82,11 @@
                                 </div>
                             </div>
 
-                            <!-- Chapters & Lessons -->
                             @for (int i = 0; i < chapters.Count; i++)
                             {
                                 var chapter = chapters[i];
                                 var chapterId = $"chapter{i}";
-                                var chapterLessons = chapter.Lessons.ToList();
+                                var chapterLessons = chapter.Lessons?.ToList() ?? new List<InternalTraining.Models.Lesson>();
 
                                 <div class="mb-3">
                                     <div class="card-header d-flex justify-content-between align-items-center text-white"
@@ -118,81 +116,10 @@
                                                         <button class="btn btn-sm text-white" style="background-color: #143D60;">Watch</button>
                                                     </li>
                                                 }
-=======
-﻿ <main class="main">
-
-    <!-- Course Details Section -->
-    <section id="course-details" class="section course-details">
-        <div class="container" data-aos="fade-up">
-            <div class="section-title">
-                <h2>Course Details</h2>
-                <p>Course Name Goes Here</p>
-            </div>
-
-            <div class="row gy-4">
-                <div class="col-lg-5 d-flex align-items-center justify-content-center">
-                    <img src="/images/admin/default-course.png" alt="Course Image" class="rounded-circle"
-                         style="width: 150px; height: 150px; object-fit: cover;" />
-                </div>
-
-                <div class="col-lg-7">
-                    <div class="course-content">
-                        <h3>Course Name</h3>
-                        <p class="description">Course description goes here. This is a sample course description to explain what the course covers.</p>
-
-                        <ul class="list-unstyled mt-3">
-                            <li><strong>Number of Chapters:</strong> 2</li>
-                        </ul>
-
-                        <a href="/company/home" class="btn btn-secondary mt-4"
-                           style="background-color: #143D60; color: #fff; border-color: #143D60;">← Back</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Course Video + Sidebar Section -->
-    <section class="section">
-        <div class="container-fluid">
-            <div class="row">
-
-                <!-- Sidebar: Fixed -->
-                <div class="col-lg-4 mb-4">
-                    <div class="card" style="position: sticky; top: 100px;">
-                        <div class="card-body">
-                            <h5 class="card-title">Course Outline</h5>
-                            <div class="accordion" id="courseOutline">
-
-                                <!-- Chapter 1 -->
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading1">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapse1">
-                                            Chapter 1: Introduction
-                                        </button>
-                                    </h2>
-                                    <div id="collapse1" class="accordion-collapse collapse" data-bs-parent="#courseOutline">
-                                        <div class="accordion-body">
-                                            <ul class="list-group list-group-flush">
-                                                <li class="list-group-item">
-                                                    <a href="#" class="lesson-link" data-video-url="https://www.youtube.com/embed/dQw4w9WgXcQ">
-                                                        Lesson
-                                                        1: Welcome
-                                                    </a>
-                                                </li>
-                                                <li class="list-group-item">
-                                                    <a href="#" class="lesson-link" data-video-url="https://www.youtube.com/embed/9bZkp7q19f0">
-                                                        Lesson
-                                                        2: Overview
-                                                    </a>
-                                                </li>
->>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
-<<<<<<< HEAD
                             }
                         </div>
                     </div>
@@ -234,7 +161,7 @@
                     let videoHtml = "";
 
                     if (url.endsWith(".mp4")) {
-                        videoHtml = `<video class='w-100 h-100' controls onloadeddata="hideSpinner()"><source src='${url}' type='video/mp4'></video>`;
+                        videoHtml = `<video id='currentVideo' class='w-100 h-100' controls onloadeddata="hideSpinner()"><source src='${url}' type='video/mp4'></video>`;
                         errorBox.classList.add("d-none");
                         videoContainer.innerHTML = videoHtml;
                     } else if (url.includes("youtube.com") || url.includes("youtu.be")) {
@@ -246,7 +173,7 @@
 
                         isYoutubeVideoAvailable(embedUrl, function (isAvailable) {
                             if (isAvailable) {
-                                videoHtml = `<iframe src='${embedUrl}' onload='hideSpinner()' style='position:absolute;top:0;left:0;width:100%;height:100%;' frameborder='0' allowfullscreen></iframe>`;
+                                videoHtml = `<iframe id='currentVideo' src='${embedUrl}' onload='hideSpinner()' style='position:absolute;top:0;left:0;width:100%;height:100%;' frameborder='0' allowfullscreen></iframe>`;
                                 errorBox.classList.add("d-none");
                                 videoContainer.innerHTML = videoHtml;
                             } else {
@@ -295,76 +222,3 @@
 
 </body>
 </html>
-=======
-
-                                <!-- Chapter 2 -->
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading2">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapse2">
-                                            Chapter 2: Basics
-                                        </button>
-                                    </h2>
-                                    <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#courseOutline">
-                                        <div class="accordion-body">
-                                            <ul class="list-group list-group-flush">
-                                                <li class="list-group-item">
-                                                    <a href="#" class="lesson-link" data-video-url="https://www.youtube.com/embed/kJQP7kiw5Fk">
-                                                        Lesson
-                                                        1: Getting Started
-                                                    </a>
-                                                </li>
-                                                <li class="list-group-item">
-                                                    <a href="#" class="lesson-link" data-video-url="https://www.youtube.com/embed/fLexgOxsZu0">
-                                                        Lesson
-                                                        2: First Steps
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Video Player -->
-                <div class="col-lg-8">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="ratio ratio-16x9" style="max-height: 400px;">
-                                <iframe id="videoPlayer" src="" frameborder="0" allowfullscreen></iframe>
-                            </div>
-                            <h4 class="mt-3" id="lessonTitle">Select a lesson to begin</h4>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-</main> 
-
-
- <!-- Script to handle video switching -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-      document.querySelectorAll('.lesson-link').forEach(link => {
-        link.addEventListener('click', function (e) {
-          e.preventDefault();
-          const videoUrl = this.getAttribute('data-video-url');
-          const title = this.textContent;
-          document.getElementById('videoPlayer').src = videoUrl;
-          document.getElementById('lessonTitle').textContent = title;
-          window.scrollTo({
-            top: document.getElementById('videoPlayer').getBoundingClientRect().top + window.scrollY - 100,
-            behavior: 'smooth'
-          });
-        });
-      });
-    });
-</script>
->>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5

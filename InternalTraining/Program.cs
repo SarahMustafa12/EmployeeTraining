@@ -1,4 +1,4 @@
-using E_TicketMovies.Email_Sender;
+using InternalTraining.Email_Sender;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using InternalTraining.Data;

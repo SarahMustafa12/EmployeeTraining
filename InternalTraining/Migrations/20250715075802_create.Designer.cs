@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InternalTraining.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250618000512_modifyappuser")]
-    partial class modifyappuser
+    [Migration("20250715075802_create")]
+    partial class create
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -410,6 +410,36 @@ namespace InternalTraining.Migrations
                     b.ToTable("CourseInvitations");
                 });
 
+            modelBuilder.Entity("InternalTraining.Models.EmployeeChapterExam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChapterId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EmployeeUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<double>("Score")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("TakenOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChapterId");
+
+                    b.HasIndex("EmployeeUserId");
+
+                    b.ToTable("EmployeeChaptersExam");
+                });
+
             modelBuilder.Entity("InternalTraining.Models.EmployeeCourse", b =>
                 {
                     b.Property<string>("EmployeeUserId")
@@ -429,6 +459,36 @@ namespace InternalTraining.Migrations
                     b.HasIndex("CourseId");
 
                     b.ToTable("employeeCourses");
+                });
+
+            modelBuilder.Entity("InternalTraining.Models.EmployeeLessonProgress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CompletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmployeeUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LessonId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeUserId");
+
+                    b.HasIndex("LessonId");
+
+                    b.ToTable("EmployeeLessonsProgress");
                 });
 
             modelBuilder.Entity("InternalTraining.Models.EmployeeProgress", b =>
@@ -984,6 +1044,25 @@ namespace InternalTraining.Migrations
                     b.Navigation("SecondPayment");
                 });
 
+            modelBuilder.Entity("InternalTraining.Models.EmployeeChapterExam", b =>
+                {
+                    b.HasOne("InternalTraining.Models.Chapter", "Chapter")
+                        .WithMany()
+                        .HasForeignKey("ChapterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InternalTraining.Models.EmployeeUser", "EmployeeUser")
+                        .WithMany()
+                        .HasForeignKey("EmployeeUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chapter");
+
+                    b.Navigation("EmployeeUser");
+                });
+
             modelBuilder.Entity("InternalTraining.Models.EmployeeCourse", b =>
                 {
                     b.HasOne("InternalTraining.Models.Course", "Course")
@@ -1001,6 +1080,25 @@ namespace InternalTraining.Migrations
                     b.Navigation("Course");
 
                     b.Navigation("EmployeeUser");
+                });
+
+            modelBuilder.Entity("InternalTraining.Models.EmployeeLessonProgress", b =>
+                {
+                    b.HasOne("InternalTraining.Models.EmployeeUser", "EmployeeUser")
+                        .WithMany()
+                        .HasForeignKey("EmployeeUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InternalTraining.Models.Lesson", "Lesson")
+                        .WithMany()
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EmployeeUser");
+
+                    b.Navigation("Lesson");
                 });
 
             modelBuilder.Entity("InternalTraining.Models.EmployeeProgress", b =>

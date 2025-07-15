@@ -407,7 +407,6 @@ namespace InternalTraining.Migrations
                     b.ToTable("CourseInvitations");
                 });
 
-<<<<<<< HEAD
             modelBuilder.Entity("InternalTraining.Models.EmployeeChapterExam", b =>
                 {
                     b.Property<int>("Id")
@@ -438,8 +437,6 @@ namespace InternalTraining.Migrations
                     b.ToTable("EmployeeChaptersExam");
                 });
 
-=======
->>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
             modelBuilder.Entity("InternalTraining.Models.EmployeeCourse", b =>
                 {
                     b.Property<string>("EmployeeUserId")
@@ -461,7 +458,6 @@ namespace InternalTraining.Migrations
                     b.ToTable("employeeCourses");
                 });
 
-<<<<<<< HEAD
             modelBuilder.Entity("InternalTraining.Models.EmployeeLessonProgress", b =>
                 {
                     b.Property<int>("Id")
@@ -492,8 +488,6 @@ namespace InternalTraining.Migrations
                     b.ToTable("EmployeeLessonsProgress");
                 });
 
-=======
->>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
             modelBuilder.Entity("InternalTraining.Models.EmployeeProgress", b =>
                 {
                     b.Property<int>("Id")
@@ -1047,7 +1041,6 @@ namespace InternalTraining.Migrations
                     b.Navigation("SecondPayment");
                 });
 
-<<<<<<< HEAD
             modelBuilder.Entity("InternalTraining.Models.EmployeeChapterExam", b =>
                 {
                     b.HasOne("InternalTraining.Models.Chapter", "Chapter")
@@ -1067,8 +1060,6 @@ namespace InternalTraining.Migrations
                     b.Navigation("EmployeeUser");
                 });
 
-=======
->>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
             modelBuilder.Entity("InternalTraining.Models.EmployeeCourse", b =>
                 {
                     b.HasOne("InternalTraining.Models.Course", "Course")
@@ -1088,7 +1079,6 @@ namespace InternalTraining.Migrations
                     b.Navigation("EmployeeUser");
                 });
 
-<<<<<<< HEAD
             modelBuilder.Entity("InternalTraining.Models.EmployeeLessonProgress", b =>
                 {
                     b.HasOne("InternalTraining.Models.EmployeeUser", "EmployeeUser")
@@ -1108,8 +1098,6 @@ namespace InternalTraining.Migrations
                     b.Navigation("Lesson");
                 });
 
-=======
->>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
             modelBuilder.Entity("InternalTraining.Models.EmployeeProgress", b =>
                 {
                     b.HasOne("InternalTraining.Models.Course", "Course")

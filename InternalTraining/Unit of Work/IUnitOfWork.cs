@@ -31,11 +31,10 @@ namespace InternalTraining.Unit_of_Work
 
         IRepository<CompanyContactUs> CompnanyContactsUs { get; }
         IRepository<ApplicationUser> ApplicationUsers { get; }
-<<<<<<< HEAD
+
         IRepository<EmployeeLessonProgress> EmployeeLessonsProgress { get; }
         IRepository<EmployeeChapterExam> EmployeeChaptersExam { get; }
-=======
->>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
+
 
         void Commit();
 

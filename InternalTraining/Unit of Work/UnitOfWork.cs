@@ -43,12 +43,11 @@ namespace InternalTraining.Unit_of_Work
 
         public IRepository<ApplicationUser> ApplicationUsers { get; private set; }
 
-<<<<<<< HEAD
+
         public IRepository<EmployeeLessonProgress> EmployeeLessonsProgress { get; private set; }
         public IRepository<EmployeeChapterExam> EmployeeChaptersExam { get; private set; }
 
-=======
->>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
+
 
         public UnitOfWork(ApplicationDbContext _context)
         {
@@ -73,13 +72,9 @@ namespace InternalTraining.Unit_of_Work
             SecondPayments = new Repository<SecondPayment>(_context);
             CompnanyContactsUs = new Repository<CompanyContactUs>(_context);
             ApplicationUsers = new Repository<ApplicationUser>(_context);
-<<<<<<< HEAD
             EmployeeLessonsProgress = new Repository<EmployeeLessonProgress>(_context);
-            EmployeeChaptersExam = new Repository<EmployeeChapterExam>(_context);
-=======
-
->>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
         }
+
         public void Commit()
         {
             _context.SaveChanges();

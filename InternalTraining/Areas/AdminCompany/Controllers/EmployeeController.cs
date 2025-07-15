@@ -1,10 +1,8 @@
 ﻿using InternalTraining.Email_Sender;
 using InternalTraining.Models;
 using InternalTraining.Unit_of_Work;
-<<<<<<< HEAD
 using Microsoft.AspNetCore.Authorization;
-=======
->>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Stripe.Checkout;
@@ -12,10 +10,8 @@ using Stripe.Checkout;
 namespace InternalTraining.Areas.AdminCompany.Controllers
 {
     [Area("AdminCompany")]
-<<<<<<< HEAD
     [Authorize(Roles = "Company")]
-=======
->>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
+
     public class EmployeeController : Controller
     {
         private readonly IUnitOfWork unitOfWork;

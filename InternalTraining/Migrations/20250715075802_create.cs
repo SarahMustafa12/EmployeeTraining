@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace InternalTraining.Migrations
 {
     /// <inheritdoc />
-    public partial class Create : Migration
+    public partial class create : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -656,35 +656,6 @@ namespace InternalTraining.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EmployeeExamsResult",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EmployeeUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ExamId = table.Column<int>(type: "int", nullable: false),
-                    Score = table.Column<double>(type: "float", nullable: false),
-                    TakenAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsPassed = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EmployeeExamsResult", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_EmployeeExamsResult_EmployeeUsers_EmployeeUserId",
-                        column: x => x.EmployeeUserId,
-                        principalTable: "EmployeeUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_EmployeeExamsResult_Exams_ExamId",
-                        column: x => x.ExamId,
-                        principalTable: "Exams",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Questions",
                 columns: table => new
                 {
@@ -884,16 +855,6 @@ namespace InternalTraining.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EmployeeExamsResult_EmployeeUserId",
-                table: "EmployeeExamsResult",
-                column: "EmployeeUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_EmployeeExamsResult_ExamId",
-                table: "EmployeeExamsResult",
-                column: "ExamId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_EmployeeLessonsProgress_EmployeeUserId",
                 table: "EmployeeLessonsProgress",
                 column: "EmployeeUserId");
@@ -1006,9 +967,6 @@ namespace InternalTraining.Migrations
 
             migrationBuilder.DropTable(
                 name: "employeeCourses");
-
-            migrationBuilder.DropTable(
-                name: "EmployeeExamsResult");
 
             migrationBuilder.DropTable(
                 name: "EmployeeLessonsProgress");
