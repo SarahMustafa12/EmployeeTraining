@@ -1,0 +1,120 @@
+﻿@model Course
+<style>
+    .dropdown-menu {
+        max-height: 200px; /* Adjust the height as needed */
+        overflow-y: auto;
+    }
+</style>
+
+<div class="container my-3">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Edit Course </h6>
+                </div>
+                <div class="card-body">
+                   
+                    <form action="/Admin/Course/Edit" method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="Id" />
+
+                       
+                        <div>
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <div class="text-danger">@error.ErrorMessage</div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Name" class="form-label"> Name</label>
+                            <input type="text" class="form-control" asp-for="Name" id="Name" name="Name" />
+                            <span class="text-danger" asp-validation-for="Name"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Price" class="control-label"></label>
+                            <input asp-for="Price" class="form-control" />
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Description" class="form-label">Description</label>
+                                
+                            <input type="text" class="form-control" asp-for="Description" id="Description" />
+
+                            <span class="text-danger" asp-validation-for="Description"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="NumberOfChapters" class="form-label">Number of Chapters</label>
+                            <input type="text" class="form-control" asp-for="NumberOfChapters" id="NumberOfChapters">
+                            <span class="text-danger" asp-validation-for="NumberOfChapters"></span>
+                        </div>
+                        <!-- Course Upload -->
+                        <div class="mb-3">
+                            <label for="CourseImage" class="form-label d-block">Course Image</label>
+                            <div class="d-flex align-items-center">
+                                <div class="custom-file w-auto">
+                                    <input type="file" class="custom-file-input" id="CourseImage" name="file" accept="image/*" onchange="previewCourseImage(event)">
+                                    <label class="custom-file-label text-left" for="CourseImage">Choose file</label>
+                                </div>
+                            </div>
+                            <span class="text-danger" asp-validation-for="CourseImage"></span>
+
+                            <!-- Image Preview (Below Input) -->
+                            <div class="mt-3 position-relative" id="imgContainer" style="display: none;">
+                                <img id="imgPreview" src="#" alt="Image Preview" class="border rounded" style="max-width: 150px; height: auto;">
+                                <button type="button" class="btn btn-danger btn-sm position-absolute" style="top: -10px; right: -10px;" onclick="removeCourseImage()">X</button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <a href="/Admin/Course" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.getElementById('CourseImage').addEventListener('change', function () {
+        var fileName = this.files[0] ? this.files[0].name : "Choose file";
+        this.nextElementSibling.innerText = fileName;
+    });
+
+    function previewCourseImage(event) {
+        const imgPreview = document.getElementById('imgPreview');
+        const imgContainer = document.getElementById('imgContainer');
+        const file = event.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                imgPreview.src = e.target.result;
+                imgContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function removeCourseImage() {
+        const imgPreview = document.getElementById('imgPreview');
+        const imgContainer = document.getElementById('imgContainer');
+        const inputFile = document.getElementById('CourseImage');
+
+        imgPreview.src = '';
+        imgContainer.style.display = 'none';
+        inputFile.value = '';
+        document.querySelector(".custom-file-label").innerText = "Choose file";
+    }
+     document.addEventListener("DOMContentLoaded", function () {
+        // Prevent dropdown from closing when clicking inside
+        document.querySelectorAll(".dropdown-menu").forEach(function (menu) {
+            menu.addEventListener("click", function (event) {
+                event.stopPropagation();
+            });
+        });
+    });
+
+</script>

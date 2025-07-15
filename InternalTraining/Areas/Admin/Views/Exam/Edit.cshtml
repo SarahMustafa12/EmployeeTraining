@@ -1,0 +1,864 @@
+﻿
+
+ @model Exam
+ @using InternalTraining.Data.Enums
+@{
+    ViewBag.Title = "Edit Exam";
+    var chapters = ViewBag.Chapters as List<Chapter>;
+    var questions = Model.Questions.ToList();
+}
+<style>
+    .dropdown-menu {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+</style>
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Edit Exam</h1>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" name="Id" value="@Model.Id" />
+
+        <!-- Exam Info -->
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="courseDropdown">Course</label>
+                    <select class="form-control" id="courseDropdown" name="CourseId" required>
+                        <option value="" disabled>Select Course</option>
+                        @foreach (var item in ViewBag.Courses)
+                        {
+                            if (item.Id == Model.Chapter.CourseId)
+                            {
+                                <option value="@item.Id" selected>@item.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@item.Id">@item.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Name</label>
+                    <input class="form-control" name="Name" value="@Model.Name" required />
+                </div>
+
+                <label for="chapterDropdown">Chapter</label>
+                <select class="form-control" id="chapterDropdown" name="ChapterId" required>
+                    <option value="">-- Select Chapter --</option>
+
+                    @foreach (var item in ViewBag.Chapters)
+                    {
+                        if (item.Id == Model.ChapterId)
+                        {
+                            <option value="@item.Id" data-course-id="@item.CourseId" selected>@item.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Id" data-course-id="@item.CourseId">@item.Name</option>
+                        }
+                    }
+                </select>
+
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const courseDropdown = document.getElementById("courseDropdown");
+                        const chapterDropdown = document.getElementById("chapterDropdown");
+
+                        function filterChapters() {
+                            const selectedCourseId = courseDropdown.value;
+                            Array.from(chapterDropdown.options).forEach(option => {
+                                const courseId = option.getAttribute("data-course-id");
+                                if (!courseId || selectedCourseId === "" || courseId === selectedCourseId) {
+                                    option.hidden = false;
+                                } else {
+                                    option.hidden = true;
+                                }
+                            });
+
+                            // Optional: Reset chapter selection if it doesn't match the course
+                            const selectedOption = chapterDropdown.selectedOptions[0];
+                            if (selectedOption && selectedOption.hidden) {
+                                chapterDropdown.value = "";
+                            }
+                        }
+
+                        courseDropdown.addEventListener("change", filterChapters);
+                        filterChapters(); // Run on page load
+                    });
+                </script>
+
+
+
+            </div>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <h4 class="mb-3">Questions</h4>
+                <div id="questions">
+                    @for (int i = 0; i < questions.Count; i++)
+                    {
+                        var question = questions[i];
+                        <div class="question border rounded p-3 mb-4 bg-light" data-index="@i">
+                            <input type="hidden" name="Questions[@i].Id" value="@question.Id" />
+                            <div class="form-group">
+                                <label>Text</label>
+                                <input class="form-control" name="Questions[@i].Text" value="@question.Text" />
+                            </div>
+                            <div class="form-group">
+                                <label>Question Type</label>
+                                <select class="form-control question-type" name="Questions[@i].QuestionType">
+                                    @if (question.QuestionType == QuestionType.ChooseOne)
+                                    {
+                                        <option value="ChooseOne" selected>ChooseOne</option>
+                                        <option value="TrueFalse">TrueFalse</option>
+                                    }
+                                    else if (question.QuestionType == QuestionType.TrueFalse)
+                                    {
+                                        <option value="TrueFalse" selected>TrueFalse</option>
+                                        <option value="ChooseOne">ChooseOne</option>
+                                        
+                                    }
+                                    
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Correct Answer</label>
+                                <select class="form-control correct-answer" name="Questions[@i].CorrectAnswer">
+                                    @{
+                                        for (int c = 0; c < question.Options.Count; c++)
+                                        {
+                                            if (question.CorrectAnswer== c)
+                                            {
+                                                <option value="@c" selected>@c</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@c" >@c</option>
+                                            }
+                                           
+                          
+                                            
+                                        }
+                                    }
+                                </select>
+                            </div>
+                           
+
+                           @*  <div class="form-group">
+                                <label>Correct Answer</label>
+                                <input class="form-control" name="Questions[@i].CorrectAnswer" value="@question.CorrectAnswer" />
+                            </div> *@
+
+                            <div class="options">
+                                <label>Options</label>
+                                @for (int j = 0; j < question.Options.Count; j++)
+                                {
+                                    <div class="option mb-2">
+                                        <input class="form-control" name="Questions[@i].Options[@j].Text" value="@question.Options[j].Text" />
+                                    </div>
+                                }
+                            </div>
+                           
+                            <button type="button" class="btn btn-sm btn-danger remove-question">Remove Question</button>
+                        </div>
+                    }
+                </div>
+
+                <button type="button" class="btn btn-primary mb-3" id="add-question">Add Question</button>
+                <button type="submit" class="btn btn-success float-right">Save</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        let questionIndex = @Model.Questions.Count;
+
+        function renumberQuestions() {
+            const questions = document.querySelectorAll("#questions .question");
+            questions.forEach((question, i) => {
+                question.setAttribute("data-index", i);
+                question.querySelectorAll("input, select, textarea").forEach(input => {
+                    if (input.name) {
+                        input.name = input.name.replace(/Questions\[\d+\]/g, `Questions[${i}]`);
+                    }
+                });
+                const options = question.querySelectorAll(".option");
+                options.forEach((opt, j) => {
+                    opt.querySelectorAll("input").forEach(input => {
+                        if (input.name) {
+                            input.name = input.name.replace(/Options\[\d+\]/g, `Options[${j}]`);
+                        }
+                    });
+                });
+                updateCorrectAnswerDropdown(question);
+            });
+        }
+
+        function updateCorrectAnswerDropdown(questionDiv) {
+            const options = questionDiv.querySelectorAll(".option input");
+            const correctAnswerSelect = questionDiv.querySelector(".correct-answer");
+            const oldValue = correctAnswerSelect.value;
+            correctAnswerSelect.innerHTML = "";
+            options.forEach((opt, i) => {
+                const option = document.createElement("option");
+                option.value = i;
+                option.text = `Option ${i}`;
+                correctAnswerSelect.appendChild(option);
+            });
+            if (oldValue && correctAnswerSelect.querySelector(`option[value="${oldValue}"]`)) {
+                correctAnswerSelect.value = oldValue;
+            }
+        }
+
+        function generateOptionsHTML(type, index) {
+            if (type === "TrueFalse") {
+                return `
+                    <label>Options</label>
+                    <div class="option mb-2">
+                        <input class="form-control" name="Questions[${index}].Options[0].Text" value="True" required />
+                    </div>
+                    <div class="option mb-2">
+                        <input class="form-control" name="Questions[${index}].Options[1].Text" value="False" required />
+                    </div>`;
+            } else {
+                let html = `<label>Options</label>`;
+                for (let i = 0; i < 4; i++) {
+                    html += `
+                        <div class="option mb-2">
+                            <input class="form-control" name="Questions[${index}].Options[${i}].Text" required />
+                        </div>`;
+                }
+                return html;
+            }
+        }
+
+        document.getElementById("add-question").addEventListener("click", function () {
+            const container = document.getElementById("questions");
+            const html = `
+                <div class="question border rounded p-3 mb-4 bg-light" data-index="${questionIndex}">
+                    <input type="hidden" name="Questions[${questionIndex}].Id" value="0" />
+                    <div class="form-group">
+                        <label>Text</label>
+                        <input class="form-control" name="Questions[${questionIndex}].Text" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Question Type</label>
+                        <select class="form-control question-type" name="Questions[${questionIndex}].QuestionType">
+                            <option value="ChooseOne">ChooseOne</option>
+                            <option value="TrueFalse">TrueFalse</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Correct Answer (Index)</label>
+                        <select class="form-control correct-answer" name="Questions[${questionIndex}].CorrectAnswer" required></select>
+                    </div>
+                    <div class="options">
+                        ${generateOptionsHTML("ChooseOne", questionIndex)}
+                    </div>
+                    <button type="button" class="btn btn-sm btn-danger remove-question">Remove Question</button>
+                </div>`;
+            container.insertAdjacentHTML("beforeend", html);
+            renumberQuestions();
+            questionIndex++;
+        });
+
+        document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("remove-question")) {
+                e.target.closest(".question").remove();
+                renumberQuestions();
+            }
+        });
+
+        document.addEventListener("change", function (e) {
+            if (e.target.classList.contains("question-type")) {
+                const questionDiv = e.target.closest(".question");
+                const optionsContainer = questionDiv.querySelector(".options");
+                const index = questionDiv.getAttribute("data-index");
+
+                const html = generateOptionsHTML(e.target.value, index);
+                optionsContainer.innerHTML = html;
+
+                updateCorrectAnswerDropdown(questionDiv);
+                renumberQuestions();
+            }
+
+            if (e.target.matches(".options input")) {
+                const questionDiv = e.target.closest(".question");
+                updateCorrectAnswerDropdown(questionDiv);
+            }
+        });
+
+        document.querySelector("form").addEventListener("submit", function (e) {
+            const questions = document.querySelectorAll("#questions .question");
+            let isValid = true;
+
+            questions.forEach(q => {
+                const type = q.querySelector(".question-type").value;
+                const options = q.querySelectorAll(".option input");
+                const correctAnswerSelect = q.querySelector(".correct-answer");
+                const correctAnswer = parseInt(correctAnswerSelect.value, 10);
+
+                if (type === "TrueFalse" && options.length !== 2) {
+                    alert("TrueFalse questions must have exactly 2 options.");
+                    isValid = false;
+                }
+
+                if (type === "ChooseOne" && options.length !== 4) {
+                    alert("ChooseOne questions must have exactly 4 options.");
+                    isValid = false;
+                }
+
+                if (isNaN(correctAnswer) || correctAnswer < 0 || correctAnswer >= options.length) {
+                    alert("Please select a valid correct answer index.");
+                    isValid = false;
+                }
+
+                options.forEach(input => {
+                    if (!input.value.trim()) {
+                        alert("All option inputs are required.");
+                        isValid = false;
+                    }
+                });
+
+                const questionText = q.querySelector("input[name*='.Text']");
+                if (!questionText.value.trim()) {
+                    alert("Question text cannot be empty.");
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    </script>
+}
+
+
+@* @section Scripts {
+    <script>
+        let questionIndex = @Model.Questions.Count;
+
+        function renumberQuestions() {
+            const questions = document.querySelectorAll("#questions .question");
+            questions.forEach((question, i) => {
+                question.setAttribute("data-index", i);
+                question.querySelectorAll("input, select, textarea").forEach(input => {
+                    if (input.name) {
+                        input.name = input.name.replace(/Questions\[\d+\]/g, `Questions[${i}]`);
+                    }
+                });
+                const options = question.querySelectorAll(".option");
+                options.forEach((opt, j) => {
+                    opt.querySelectorAll("input").forEach(input => {
+                        if (input.name) {
+                            input.name = input.name.replace(/Options\[\d+\]/g, `Options[${j}]`);
+                        }
+                    });
+                });
+                updateCorrectAnswerDropdown(question);
+            });
+        }
+
+        function updateCorrectAnswerDropdown(questionDiv) {
+            const options = questionDiv.querySelectorAll(".option input");
+            const correctAnswerSelect = questionDiv.querySelector(".correct-answer");
+            const oldValue = correctAnswerSelect.value;
+            correctAnswerSelect.innerHTML = "";
+            options.forEach((opt, i) => {
+                const option = document.createElement("option");
+                option.value = i;
+                option.text = `Option ${i}`;
+                correctAnswerSelect.appendChild(option);
+            });
+            if (oldValue && correctAnswerSelect.querySelector(`option[value="${oldValue}"]`)) {
+                correctAnswerSelect.value = oldValue;
+            }
+        }
+
+        document.getElementById("add-question").addEventListener("click", function () {
+            const container = document.getElementById("questions");
+            const html = `
+                <div class="question border rounded p-3 mb-4 bg-light" data-index="${questionIndex}">
+                    <input type="hidden" name="Questions[${questionIndex}].Id" value="0" />
+                    <div class="form-group">
+                        <label>Text</label>
+                        <input class="form-control" name="Questions[${questionIndex}].Text" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Question Type</label>
+                        <select class="form-control question-type" name="Questions[${questionIndex}].QuestionType">
+                            <option value="ChooseOne">ChooseOne</option>
+                            <option value="TrueFalse">TrueFalse</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Correct Answer (Index)</label>
+                        <select class="form-control correct-answer" name="Questions[${questionIndex}].CorrectAnswer" required></select>
+                    </div>
+                    <div class="options">
+                        <label>Options</label>
+                        <div class="option mb-2">
+                            <input class="form-control" name="Questions[${questionIndex}].Options[0].Text" required />
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-secondary add-option">Add Option</button>
+                    <button type="button" class="btn btn-sm btn-danger remove-question">Remove Question</button>
+                </div>`;
+            container.insertAdjacentHTML("beforeend", html);
+            renumberQuestions();
+            questionIndex++;
+        });
+
+        document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("remove-question")) {
+                e.target.closest(".question").remove();
+                renumberQuestions();
+            }
+
+            if (e.target.classList.contains("add-option")) {
+                const questionDiv = e.target.closest(".question");
+                const index = questionDiv.getAttribute("data-index");
+                const typeSelect = questionDiv.querySelector(".question-type");
+                const questionType = typeSelect.value;
+                const optionsContainer = questionDiv.querySelector(".options");
+                const optionCount = optionsContainer.querySelectorAll(".option").length;
+
+                if (questionType === "TrueFalse") {
+                    alert("True/False questions can only have 2 options.");
+                    return;
+                }
+
+                if (optionCount >= 4) {
+                    alert("ChooseOne questions must have exactly 4 options.");
+                    return;
+                }
+
+                const optionHtml = `
+                    <div class="option mb-2">
+                        <input class="form-control" name="Questions[${index}].Options[${optionCount}].Text" required />
+                    </div>`;
+                optionsContainer.insertAdjacentHTML("beforeend", optionHtml);
+                updateCorrectAnswerDropdown(questionDiv);
+                renumberQuestions();
+            }
+        });
+
+        document.addEventListener("change", function (e) {
+            if (e.target.classList.contains("question-type")) {
+                const questionDiv = e.target.closest(".question");
+                const optionsContainer = questionDiv.querySelector(".options");
+                const index = questionDiv.getAttribute("data-index");
+
+                if (e.target.value === "TrueFalse") {
+                    optionsContainer.innerHTML = `
+                        <label>Options</label>
+                        <div class="option mb-2">
+                            <input class="form-control" name="Questions[${index}].Options[0].Text" value="True" required />
+                        </div>
+                        <div class="option mb-2">
+                            <input class="form-control" name="Questions[${index}].Options[1].Text" value="False" required />
+                        </div>`;
+                } else {
+                    optionsContainer.innerHTML = `
+                        <label>Options</label>
+                        <div class="option mb-2">
+                            <input class="form-control" name="Questions[${index}].Options[0].Text" required />
+                        </div>`;
+                }
+
+                updateCorrectAnswerDropdown(questionDiv);
+                renumberQuestions();
+            }
+
+            if (e.target.matches(".options input")) {
+                const questionDiv = e.target.closest(".question");
+                updateCorrectAnswerDropdown(questionDiv);
+            }
+        });
+
+        document.querySelector("form").addEventListener("submit", function (e) {
+            const questions = document.querySelectorAll("#questions .question");
+            let isValid = true;
+
+            questions.forEach(q => {
+                const type = q.querySelector(".question-type").value;
+                const options = q.querySelectorAll(".option input");
+                const correctAnswerSelect = q.querySelector(".correct-answer");
+                const correctAnswer = parseInt(correctAnswerSelect.value, 10);
+
+                if (type === "TrueFalse" && options.length !== 2) {
+                    alert("TrueFalse questions must have exactly 2 options.");
+                    isValid = false;
+                }
+
+                if (type === "ChooseOne" && options.length !== 4) {
+                    alert("ChooseOne questions must have exactly 4 options.");
+                    isValid = false;
+                }
+
+                if (isNaN(correctAnswer) || correctAnswer < 0 || correctAnswer >= options.length) {
+                    alert("Please select a valid correct answer index.");
+                    isValid = false;
+                }
+
+                // Ensure required inputs are not empty
+                options.forEach(input => {
+                    if (!input.value.trim()) {
+                        alert("All option inputs are required.");
+                        isValid = false;
+                    }
+                });
+
+                const questionText = q.querySelector("input[name*='.Text']");
+                if (!questionText.value.trim()) {
+                    alert("Question text cannot be empty.");
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    </script>
+} *@
+
+
+@* @section Scripts {
+    <script>
+        let questionIndex = @Model.Questions.Count;
+
+        function renumberQuestions() {
+            const questions = document.querySelectorAll("#questions .question");
+            questions.forEach((question, i) => {
+                question.setAttribute("data-index", i);
+                question.querySelectorAll("input, select, textarea").forEach(input => {
+                    if (input.name) {
+                        input.name = input.name.replace(/Questions\[\d+\]/g, `Questions[${i}]`);
+                    }
+                });
+                const options = question.querySelectorAll(".option");
+                options.forEach((opt, j) => {
+                    opt.querySelectorAll("input").forEach(input => {
+                        if (input.name) {
+                            input.name = input.name.replace(/Options\[\d+\]/g, `Options[${j}]`);
+                        }
+                    });
+                });
+                updateCorrectAnswerDropdown(question);
+            });
+        }
+
+        function updateCorrectAnswerDropdown(questionDiv) {
+            const options = questionDiv.querySelectorAll(".option input");
+            const correctAnswerSelect = questionDiv.querySelector(".correct-answer");
+            const oldValue = correctAnswerSelect.value;
+            correctAnswerSelect.innerHTML = "";
+            options.forEach((opt, i) => {
+                const option = document.createElement("option");
+                option.value = i;
+                option.text = `Option ${i}`;
+                correctAnswerSelect.appendChild(option);
+            });
+            // restore previous value if still valid
+            if (oldValue && correctAnswerSelect.querySelector(`option[value="${oldValue}"]`)) {
+                correctAnswerSelect.value = oldValue;
+            }
+        }
+
+        document.getElementById("add-question").addEventListener("click", function () {
+            const container = document.getElementById("questions");
+            const html = `
+                <div class="question border rounded p-3 mb-4 bg-light" data-index="${questionIndex}">
+                    <input type="hidden" name="Questions[${questionIndex}].Id" value="0" />
+                    <div class="form-group">
+                        <label>Text</label>
+                        <input class="form-control" name="Questions[${questionIndex}].Text" />
+                    </div>
+                    <div class="form-group">
+                        <label>Question Type</label>
+                        <select class="form-control question-type" name="Questions[${questionIndex}].QuestionType">
+                            <option value="ChooseOne">ChooseOne</option>
+                            <option value="TrueFalse">TrueFalse</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Correct Answer (Index)</label>
+                        <select class="form-control correct-answer" name="Questions[${questionIndex}].CorrectAnswer"></select>
+                    </div>
+                    <div class="options">
+                        <label>Options</label>
+                        <div class="option mb-2">
+                            <input class="form-control" name="Questions[${questionIndex}].Options[0].Text" />
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-secondary add-option">Add Option</button>
+                    <button type="button" class="btn btn-sm btn-danger remove-question">Remove Question</button>
+                </div>`;
+            container.insertAdjacentHTML("beforeend", html);
+            renumberQuestions();
+            questionIndex++;
+        });
+
+        document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("remove-question")) {
+                e.target.closest(".question").remove();
+                renumberQuestions();
+            }
+
+            if (e.target.classList.contains("add-option")) {
+                const questionDiv = e.target.closest(".question");
+                const index = questionDiv.getAttribute("data-index");
+                const typeSelect = questionDiv.querySelector(".question-type");
+                const questionType = typeSelect.value;
+                const optionsContainer = questionDiv.querySelector(".options");
+                const optionCount = optionsContainer.querySelectorAll(".option").length;
+
+                if (questionType === "TrueFalse") {
+                    alert("True/False questions can only have 2 options.");
+                    return;
+                }
+
+                if (optionCount >= 4) {
+                    alert("ChooseOne questions must have exactly 4 options.");
+                    return;
+                }
+
+                const optionHtml = `
+                    <div class="option mb-2">
+                        <input class="form-control" name="Questions[${index}].Options[${optionCount}].Text" />
+                    </div>`;
+                optionsContainer.insertAdjacentHTML("beforeend", optionHtml);
+                updateCorrectAnswerDropdown(questionDiv);
+                renumberQuestions();
+            }
+        });
+
+        document.addEventListener("change", function (e) {
+            if (e.target.classList.contains("question-type")) {
+                const questionDiv = e.target.closest(".question");
+                const optionsContainer = questionDiv.querySelector(".options");
+                const index = questionDiv.getAttribute("data-index");
+
+                if (e.target.value === "TrueFalse") {
+                    optionsContainer.innerHTML = `
+                        <label>Options</label>
+                        <div class="option mb-2">
+                            <input class="form-control" name="Questions[${index}].Options[0].Text" value="True" required />
+                        </div>
+                        <div class="option mb-2">
+                            <input class="form-control" name="Questions[${index}].Options[1].Text" value="False" required/>
+                        </div>`;
+                } else {
+                    optionsContainer.innerHTML = `
+                        <label>Options</label>
+                        <div class="option mb-2">
+                            <input class="form-control" name="Questions[${index}].Options[0].Text" required/>
+                        </div>`;
+                }
+
+                updateCorrectAnswerDropdown(questionDiv);
+                renumberQuestions();
+            }
+
+            if (e.target.matches(".options input")) {
+                const questionDiv = e.target.closest(".question");
+                updateCorrectAnswerDropdown(questionDiv);
+            }
+        });
+
+        document.querySelector("form").addEventListener("submit", function (e) {
+            const questions = document.querySelectorAll("#questions .question");
+            let isValid = true;
+
+            questions.forEach(q => {
+                const type = q.querySelector(".question-type").value;
+                const options = q.querySelectorAll(".option input");
+                const correctAnswerSelect = q.querySelector(".correct-answer");
+                const correctAnswer = parseInt(correctAnswerSelect.value, 10);
+
+                if (type === "TrueFalse" && options.length !== 2) {
+                    alert("TrueFalse questions must have exactly 2 options.");
+                    isValid = false;
+                }
+
+                if (type === "ChooseOne" && options.length !== 4) {
+                    alert("ChooseOne questions must have exactly 4 options.");
+                    isValid = false;
+                }
+
+                if (isNaN(correctAnswer) || correctAnswer < 0 || correctAnswer >= options.length) {
+                    alert("Please select a valid correct answer index.");
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    </script>
+} *@
+
+@* @section Scripts {
+    <script>
+        let questionIndex = @Model.Questions.Count;
+
+        function renumberQuestions() {
+            const questions = document.querySelectorAll("#questions .question");
+            questions.forEach((question, i) => {
+                question.setAttribute("data-index", i);
+                question.querySelectorAll("input, select, textarea").forEach(input => {
+                    if (input.name) {
+                        input.name = input.name.replace(/Questions\[\d+\]/g, `Questions[${i}]`);
+                    }
+                });
+                const options = question.querySelectorAll(".option");
+                options.forEach((opt, j) => {
+                    opt.querySelectorAll("input").forEach(input => {
+                        if (input.name) {
+                            input.name = input.name.replace(/Options\[\d+\]/g, `Options[${j}]`);
+                        }
+                    });
+                });
+            });
+        }
+
+        document.getElementById("add-question").addEventListener("click", function () {
+            const container = document.getElementById("questions");
+            const html = `
+                <div class="question border rounded p-3 mb-4 bg-light" data-index="${questionIndex}">
+                    <input type="hidden" name="Questions[${questionIndex}].Id" value="0" />
+                    <div class="form-group">
+                        <label>Text</label>
+                        <input class="form-control" name="Questions[${questionIndex}].Text" />
+                    </div>
+                    <div class="form-group">
+                        <label>Question Type</label>
+                        <select class="form-control question-type" name="Questions[${questionIndex}].QuestionType">
+                            <option value="ChooseOne">ChooseOne</option>
+                            <option value="TrueFalse">TrueFalse</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Correct Answer (Index)</label>
+                        <input class="form-control correct-answer" name="Questions[${questionIndex}].CorrectAnswer" />
+                    </div>
+                    <div class="options">
+                        <label>Options</label>
+                        <div class="option mb-2">
+                            <input class="form-control" name="Questions[${questionIndex}].Options[0].Text" />
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-secondary add-option">Add Option</button>
+                    <button type="button" class="btn btn-sm btn-danger remove-question">Remove Question</button>
+                </div>`;
+            container.insertAdjacentHTML("beforeend", html);
+            questionIndex++;
+            renumberQuestions();
+        });
+
+        document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("remove-question")) {
+                e.target.closest(".question").remove();
+                renumberQuestions();
+            }
+
+            if (e.target.classList.contains("add-option")) {
+                const questionDiv = e.target.closest(".question");
+                const index = questionDiv.getAttribute("data-index");
+                const typeSelect = questionDiv.querySelector(".question-type");
+                const questionType = typeSelect.value;
+                const optionsContainer = questionDiv.querySelector(".options");
+                const optionCount = optionsContainer.querySelectorAll(".option").length;
+
+                if (questionType === "TrueFalse") {
+                    alert("True/False questions can only have 2 options: True and False.");
+                    return;
+                }
+
+                if (optionCount >= 4) {
+                    alert("ChooseOne questions can only have up to 4 options.");
+                    return;
+                }
+
+                const optionHtml = `
+                    <div class="option mb-2">
+                        <input class="form-control" name="Questions[${index}].Options[${optionCount}].Text" />
+                    </div>`;
+                optionsContainer.insertAdjacentHTML("beforeend", optionHtml);
+                renumberQuestions();
+            }
+        });
+
+        document.addEventListener("change", function (e) {
+            if (e.target.classList.contains("question-type")) {
+                const questionDiv = e.target.closest(".question");
+                const optionsContainer = questionDiv.querySelector(".options");
+                const index = questionDiv.getAttribute("data-index");
+
+                if (e.target.value === "TrueFalse") {
+                    optionsContainer.innerHTML = `
+                        <label>Options</label>
+                        <div class="option mb-2">
+                            <input class="form-control" name="Questions[${index}].Options[0].Text" value="True" />
+                        </div>
+                        <div class="option mb-2">
+                            <input class="form-control" name="Questions[${index}].Options[1].Text" value="False" />
+                        </div>`;
+                } else {
+                    optionsContainer.innerHTML = `
+                        <label>Options</label>
+                        <div class="option mb-2">
+                            <input class="form-control" name="Questions[${index}].Options[0].Text" />
+                        </div>`;
+                }
+
+                renumberQuestions();
+            }
+        });
+
+        // ✅ Validate correct answer index on form submit
+        document.querySelector("form").addEventListener("submit", function (e) {
+            const questions = document.querySelectorAll("#questions .question");
+            let isValid = true;
+            questions.forEach(q => {
+                const type = q.querySelector(".question-type").value;
+                const options = q.querySelectorAll(".option input");
+                const correctAnswerInput = q.querySelector(".correct-answer");
+                const correctAnswer = parseInt(correctAnswerInput.value, 10);
+
+                if (isNaN(correctAnswer)) {
+                    alert("Correct answer must be a number.");
+                    isValid = false;
+                    return;
+                }
+
+                if (type === "TrueFalse" && (correctAnswer < 0 || correctAnswer > 1)) {
+                    alert("True/False question correct answer must be 0 or 1.");
+                    isValid = false;
+                }
+
+                if (type === "ChooseOne" && (correctAnswer < 0 || correctAnswer >= options.length)) {
+                    alert("ChooseOne correct answer must be between 0 and " + (options.length - 1));
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    </script>
+} *@
+
+

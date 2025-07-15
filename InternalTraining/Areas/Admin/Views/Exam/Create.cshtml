@@ -1,0 +1,226 @@
+﻿@model Exam
+
+<style>
+    .dropdown-menu {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+</style>
+
+<div class="container my-3">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Add Exam</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post" onsubmit="return validateForm();">
+                        <!-- Course Dropdown -->
+                        <div class="mb-3">
+                            <label for="courseDropdown">Course</label>
+                            <select class="form-control" id="courseDropdown" name="CourseId" required>
+                                <option value="" disabled selected>Select Course</option>
+                                @foreach (var item in ViewBag.Courses)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Exam Name -->
+                        <div class="mb-3">
+                            <label for="Name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="Name" name="Name" required />
+                        </div>
+
+                        <!-- Chapter Dropdown -->
+                        <div class="mb-3">
+                            <label for="chapterDropdown">Chapter</label>
+                            <select class="form-control" id="chapterDropdown" name="ChapterId" required>
+                                <option value="" disabled selected>Select Chapter</option>
+                                @foreach (var item in ViewBag.Chapters)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Add Questions Section -->
+                        <hr />
+                        <h6 class="font-weight-bold text-primary">Add Questions</h6>
+                        <div id="questionsContainer"></div>
+
+                        <button type="button" class="btn btn-outline-success my-2" id="addQuestionBtn">+ Add Question</button>
+
+                        <!-- Submit Buttons -->
+                        <button type="submit" class="btn btn-primary">Add</button>
+                        <a href="#" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('courseDropdown').addEventListener('change', function () {
+            var courseId = this.value;
+            var chapterSelect = document.getElementById('chapterDropdown');
+
+            if (courseId) {
+                fetch(`/Admin/Exam/GetChaptersByCourse?courseId=${courseId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        chapterSelect.innerHTML = '<option value="" disabled selected>Select Chapter</option>';
+                        data.forEach(chapter => {
+                            chapterSelect.innerHTML += `<option value="${chapter.id}">${chapter.name}</option>`;
+                        });
+                    });
+            } else {
+                chapterSelect.innerHTML = '<option value="" disabled selected>Select Chapter</option>';
+            }
+        });
+
+        let questionIndex = 0;
+
+        document.getElementById('addQuestionBtn').addEventListener('click', function () {
+            const container = document.getElementById('questionsContainer');
+
+            const questionHtml = `
+                <div class="card mb-3 p-3 shadow-sm" id="question-${questionIndex}">
+                    <div class="mb-2">
+                        <label>Question Text</label>
+                        <input type="text" class="form-control" name="Questions[${questionIndex}].Text" required />
+                    </div>
+
+                    <!-- Question Type Dropdown -->
+                    <div class="mb-2">
+                        <label>Question Type</label>
+                        <select class="form-control question-type-select" name="Questions[${questionIndex}].QuestionType" onchange="toggleOptions(${questionIndex}, this)">
+                            <option value="ChooseOne">Choose One</option>
+                            <option value="TrueFalse">True / False</option>
+                        </select>
+                    </div>
+
+                    <!-- Options Container (ChooseOne) -->
+                    <div class="options-container" id="options-${questionIndex}">
+                        <div class="row">
+                            ${['A', 'B', 'C', 'D'].map((letter, i) => `
+                                <div class="col-md-6 mb-2">
+                                    <label>Option ${letter}</label>
+                                    <input type="text" class="form-control" name="Questions[${questionIndex}].Options[${i}].Text" required />
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Questions[${questionIndex}].CorrectAnswer" value="${i}" required />
+                                        <label class="form-check-label">Correct Answer</label>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- True/False Options -->
+                    <div class="row d-none" id="true-false-${questionIndex}">
+                        ${['True', 'False'].map((val, i) => `
+                            <div class="col-md-6 mb-2">
+                                <label>${val}</label>
+                                <input type="hidden" name="Questions[${questionIndex}].Options[${i}].Text" value="${val}" />
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Questions[${questionIndex}].CorrectAnswer" value="${i}" required />
+                                    <label class="form-check-label">Correct Answer</label>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeQuestion(${questionIndex})">Remove Question</button>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', questionHtml);
+
+            // Make sure the 'ChooseOne' options have required on inputs and radios, and 'TrueFalse' inputs are not required initially
+            toggleOptions(questionIndex, document.querySelector(`#question-${questionIndex} .question-type-select`));
+
+            questionIndex++;
+        });
+
+        function removeQuestion(index) {
+            const questionCard = document.getElementById(`question-${index}`);
+            if (questionCard) questionCard.remove();
+        }
+
+        function toggleOptions(index, selectElement) {
+            const type = selectElement.value;
+            const optionsDiv = document.getElementById(`options-${index}`);
+            const trueFalseDiv = document.getElementById(`true-false-${index}`);
+
+            // Uncheck all radios first
+            const questionCard = document.getElementById(`question-${index}`);
+            const radios = questionCard.querySelectorAll('input[type="radio"]');
+            radios.forEach(r => r.checked = false);
+
+            if (type === 'TrueFalse') {
+                optionsDiv.classList.add('d-none');
+                trueFalseDiv.classList.remove('d-none');
+
+                // Disable required on ChooseOne inputs and radios
+                optionsDiv.querySelectorAll('input').forEach(input => {
+                    input.required = false;
+                    input.disabled = true;
+                });
+
+                // Enable required on TrueFalse radios only
+                trueFalseDiv.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.required = true;
+                    radio.disabled = false;
+                });
+            } else {
+                trueFalseDiv.classList.add('d-none');
+                optionsDiv.classList.remove('d-none');
+
+                // Enable required on ChooseOne inputs and radios
+                optionsDiv.querySelectorAll('input').forEach(input => {
+                    input.required = true;
+                    input.disabled = false;
+                });
+
+                // Disable required on TrueFalse radios only
+                trueFalseDiv.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.required = false;
+                    radio.disabled = true;
+                });
+            }
+        }
+
+        // Optional: validate form before submit
+        function validateForm() {
+            // Example: ensure at least one question added
+            if (questionIndex === 0 || !document.getElementById('questionsContainer').hasChildNodes()) {
+                alert('Please add at least one question.');
+                return false;
+            }
+            return true;
+        }
+
+        // Radio toggle behavior to allow unchecking radios
+        document.addEventListener('click', function (e) {
+            if (e.target.type === 'radio') {
+                let radio = e.target;
+
+                if (radio.checked && radio.dataset.waschecked === 'true') {
+                    radio.checked = false;
+                    radio.dataset.waschecked = 'false';
+                    radio.closest('form').querySelectorAll(`[name="${radio.name}"]`).forEach(r => r.required = false);
+                } else {
+                    document.querySelectorAll(`input[name="${radio.name}"]`).forEach(r => {
+                        r.dataset.waschecked = 'false';
+                    });
+                    radio.dataset.waschecked = 'true';
+                    radio.closest('form').querySelectorAll(`[name="${radio.name}"]`).forEach(r => r.required = true);
+                }
+            }
+        });
+    </script>
+}

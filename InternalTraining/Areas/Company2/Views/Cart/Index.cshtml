@@ -1,0 +1,73 @@
+﻿@model IEnumerable<Cart>
+
+<div class="cart-wrapper py-5">
+    <div class="container">
+        <div class="row gy-4">
+            <!-- Cart Items Section -->
+            <div class="col-lg-8">
+                <div class="d-flex flex-column gap-4">
+                    <!-- Product Card -->
+                    @foreach(var item in Model)
+                    {
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <div class="row align-items-center g-3">
+                                    <div class="col-md-2">
+                                        <img src="/images/admin/@item.Course.CourseImage" alt="Product" class="img-fluid rounded">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6 class="mb-1">@item.Course.Name</h6>
+                                       @*  <small class="text-muted">@item.Course.Name</small> *@
+                                    </div>
+                                   
+
+                                    <div class="col-md-2">
+                                        <strong>$@item.Course.Price</strong>
+                                    </div>
+                                    <div class="col-md-1 text-end">
+                                        <form method="post" action="/Company2/Cart/Delete/@item.Course.Id">
+                                            <input type="hidden" name="courseId" value="@item.Course.Id">
+                                            <button type="submit" class="btn btn-link text-danger p-0">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                 
+                    <!-- Repeat card for more products -->
+                </div>
+            </div>
+
+            <!-- Summary Section -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Order Summary</h5>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal</span>
+                            <span>$@ViewBag.TotalPrie</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-4">
+                            <strong>Total</strong>
+                            <strong>$@ViewBag.TotalPrie</strong>
+                        </div>
+
+                        <div class="input-group mb-4">
+                            <input type="text" class="form-control" placeholder="Promo code">
+                            <button class="btn btn-outline-secondary" type="button">Apply</button>
+                        </div>
+                        <a href="/Company2/Cart/Checkout" class="btn w-100 mb-3" style="background-color: #143d60; color: white; border: none;">Proceed to Checkout</a>
+
+                        <div class="text-center text-muted small">
+                            <i class="bi bi-shield-check text-success"></i> Secure checkout
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

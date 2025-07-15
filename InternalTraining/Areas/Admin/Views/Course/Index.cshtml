@@ -1,0 +1,127 @@
+﻿@model IEnumerable<Course>
+<div class="container-fluid">
+
+    <!-- Title & Create Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-gray-800">All Courses</h1>
+        <a href="/Admin/Course/Create" class="btn btn-primary btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-plus"></i>
+            </span>
+            <span class="text">Add New</span>
+        </a>
+    </div>
+    <!-- Course Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Course List</h6>
+            <form method="get" action="/Admin/Course/Index" class="form-inline">
+                <div class="input-group">
+                    <input type="text" class="form-control bg-light small" name="query" placeholder="Search for..."
+                           aria-label="Search" aria-describedby="basic-addon2" style="border: 2px solid #fff;">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search fa-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Image</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Example static Course row -->
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.Price.ToString("C")</td>
+
+                                <td class="text-center">
+                                    @*  <img src="/images/admin/@item.CourseImage" alt="" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;"> *@                                   
+                                    @{
+                                        var imageSrc = string.IsNullOrWhiteSpace(item.CourseImage)
+                                        ? Url.Content("~/images/admin/default-course.png")
+                                        : (item.CourseImage.StartsWith("http") ? item.CourseImage : Url.Content("~/images/admin/" + item.CourseImage));
+                                    }
+                                    <img src="@imageSrc"
+                                         alt="Course Image"
+                                         class="rounded-circle"
+                                         style="width: 50px; height: 50px; object-fit: cover;" />
+                                </td>
+
+                                <td>
+                                    <a href="/Admin/Course/Edit?courseId=@item.Id" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+
+                                    <button class="btn btn-danger btn-sm" onclick="confirmDelete(@item.Id)">
+
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+
+                        <!-- Add more static rows as needed -->
+                    </tbody>
+                </table>
+            </div>
+
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-end">
+                    <li class="page-item @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+                        <a class="page-link" href="/Admin/Course/Index?page=@(ViewBag.CurrentPage - 1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link" href="/Admin/Course/Index?page=@i">@i</a>
+                        </li>
+                    }
+
+                    <li class="page-item @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
+                        <a class="page-link" href="/Admin/Course/Index?page=@(ViewBag.CurrentPage + 1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+</div>
+
+<!-- Include SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(CourseId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This action cannot be undone!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#143D60",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+            window.location.href = "/Admin/Course/Delete?courseId=" + CourseId;
+                }
+        });
+    }
+</script>

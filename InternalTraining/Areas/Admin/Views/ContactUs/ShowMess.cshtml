@@ -1,0 +1,44 @@
+﻿@model ContactUs
+<div class="container-fluid">
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">The Message</h6>
+    </div>
+    <div class="card-body">
+        <div class="row gy-4">
+
+            <div class="col-md-6 mb-3">
+                <label for="CompanyName" class="form-label">Company Name</label>
+                <input type="text" id="CompanyName" name="CompanyName" class="form-control" value="@Model.CompanyName" disabled>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="Email" class="form-label">Email</label>
+                <input type="email" id="Email" name="Email" class="form-control" value="@Model.Email" disabled>
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <label for="Phone" class="form-label">Phone</label>
+                <input type="text" id="Phone" name="Phone" class="form-control" value="@Model.Phone" disabled>
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <label for="NumberOfEmployees" class="form-label">Number of Employees</label>
+                <input type="text" id="NumberOfEmployees" name="NumberOfEmployees" class="form-control" value="@Model.NumberOfEmployees" disabled>
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <label for="ExpectedTrainingDate" class="form-label">Expected Training Date</label>
+                <input type="date" id="ExpectedTrainingDate" name="ExpectedTrainingDate" class="form-control" value="@Model.ExpectedTrainingDate.ToString("yyyy-MM-dd")" disabled>
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <label for="Message" class="form-label">Message</label>
+                <textarea id="Message" name="Message" class="form-control" rows="6" disabled>@Model.Message</textarea>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+</div>

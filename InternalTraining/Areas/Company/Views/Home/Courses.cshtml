@@ -1,0 +1,57 @@
+﻿@model IEnumerable<InternalTraining.Models.Course>
+
+<section id="courses" class="courses section py-5">
+
+    <!-- Section Title -->
+    <div class="container section-title text-center mb-5" data-aos="fade-up">
+        <h2 class="fw-bold">Courses</h2>
+    </div><!-- End Section Title -->
+
+    <div class="container">
+        <div class="row g-4">
+
+            @foreach (var item in Model)
+            {
+                <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="course-item card shadow-sm border-0 w-100 d-flex flex-column justify-content-between">
+
+                        <div class="card-body d-flex flex-column text-center">
+
+                            @{
+                                var imageSrc = string.IsNullOrWhiteSpace(item.CourseImage)
+                                ? Url.Content("~/images/admin/default-course.png")
+                                : (item.CourseImage.StartsWith("http") ? item.CourseImage : Url.Content("~/images/admin/" + item.CourseImage));
+                            }
+
+                            <a href="@Url.Action("Details", "Home", new { area = "Company", id = item.Id })">
+                                <img src="@imageSrc"
+                                     alt="Course Image"
+                                     class="rounded-circle mx-auto mb-3"
+                                style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #143D60;"/>
+                            </a>
+
+                            <h5 class="card-title">
+                                <a href="@Url.Action("Details", "Home", new { area = "Company", id = item.Id })"
+                                   class="stretched-link text-decoration-none text-dark">
+                                    @item.Name
+                                </a>
+                            </h5>
+
+                            <p class="card-text text-secondary flex-grow-1">@item.Description</p>
+
+                            <div class="d-flex justify-content-center align-items-center gap-3 mt-3">
+                                <p class="mb-0"><strong>Chapters:</strong> @item.NumberOfChapters</p> 
+                                @* <p class="mb-0"><strong>Chapters:</strong> @item.Chapters?.Count</p> *@
+                                <span class="text-muted">|</span>
+                                <p class="mb-0 fw-bold" style="color: #143D60;">$@item.Price</p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</section>
