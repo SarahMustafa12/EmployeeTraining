@@ -1,0 +1,59 @@
+﻿
+ @model IEnumerable<BookingCourse>
+
+ <section id="courses" class="py-5">
+    <div class="container">
+        <!-- Section Title -->
+        <div class="mb-4 text-center">
+            <h2 class="h3 text-gray-800" style="color:#143d60">My Enrolled Courses</h2>
+        </div>
+
+        <div class="row">
+            <!-- Example course card - Repeat this block for each course -->
+            @foreach(var item in Model)
+            {
+                
+    var description = item.Course.Description;
+    var shortDesc = !string.IsNullOrEmpty(description) && description.Length > 100
+        ? description.Substring(0, 100) + "..."
+        : description;
+
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-body text-center d-flex flex-column justify-content-between">
+<<<<<<< HEAD
+                            <a href="/AdminCompany/Home/CourseDetails/@item.CourseId">
+=======
+                            <a href="/AdminCompany/Home/CourseDetails">
+>>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
+                                <img src="/images/admin/@item.Course.CourseImage"
+                                     alt="Course Image"
+                                     class="rounded-circle mb-3"
+                                     style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #143d60;" />
+                            </a>
+                            <h5 class="card-title">
+                                <a href="#" class="text-dark text-decoration-none" style="color:#143d60">@item.Course.Name</a>
+                            </h5>
+                            <p class="card-text text-gray-600 flex-grow-1">@shortDesc</p>
+                            <div class="d-flex justify-content-center align-items-center mt-3">
+                                <p class="mb-0 mr-3"><strong>Chapters:</strong> @item.Course.Chapters.Count</p>
+                                <span class="text-muted mr-3">|</span>
+                                <p class="mb-0 font-weight-bold text-primary" style="color:#143d60;">$@item.Course.Price</p>
+                                <span class="text-muted mr-3">|</span>
+                                
+                                    <input type="hidden" name="Id" value="@item.CourseId" />
+                                    <a href="/AdminCompany/Employee/SendInvitaion/@item.CourseId" class="mb-0 btn btn-secondary ">
+                                        Invite
+                                    </a>
+                                
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+           
+            <!-- End of course card -->
+        </div>
+    </div>
+</section>

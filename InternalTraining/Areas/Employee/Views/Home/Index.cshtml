@@ -1,0 +1,73 @@
+<<<<<<< HEAD
+﻿@model IEnumerable<EmployeeCourse>
+
+    <div id="wrapper">
+        <!-- Sidebar (optional) -->
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <!-- Topbar -->
+              @*   <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <h1 class="h3 mb-0 text-gray-800">Welcome Page</h1>
+                </nav> *@
+                <!-- Main Content -->
+                <div class="container-fluid">
+                    <!-- Welcome Card -->
+                    <div class="card shadow mb-4">
+                        <div class="card-body text-center">
+                            <h2 id="greeting" class="mb-3">Welcome, Employee!</h2>
+                            <p class="lead">We're excited to have you join our courses 🎉</p>
+                        </div>
+                    </div>
+                    <!-- Courses Row -->
+                    <div class="row">
+                        @foreach(var item in Model)
+                        {
+                        <div class="col-xl-4 col-md-6 mb-4" >
+                            <div class="card bg-info text-white shadow" style="background-color:#143d60 !important">
+                                <div class="card-body" style=" font-size: 1.2rem;">
+                                    @item.Course.Name<br />
+                                    <small>@item.InvitedOn.ToString("yyyy-MM-dd")</small>
+                                </div>
+                                <div class="card-footer d-flex align-items-center justify-content-between" style="font-size: 1.1rem;">
+                                    <a style="color:#143D60 !important" class="small text-white stretched-link" href="/Employee/Home/CourseContent/@item.CourseId">Start Learning </a>
+                                    <div class="small text-white"><i style="color:#143D60 !important "class="fas fa-angle-right"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                       
+                       @*  <div class="col-xl-4 col-md-6 mb-4">
+                            <div class="card bg-success text-white shadow">
+                                <div class="card-body">
+                                    Advanced CSS<br />
+                                    <small>July 1, 2025</small>
+                                </div>
+                                <div class="card-footer d-flex align-items-center justify-content-between">
+                                    <a class="small text-white stretched-link" href="#">View Details</a>
+                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                </div>
+                            </div>
+                        </div> *@
+                        <!-- add more cards here -->
+                    </div>
+                </div>
+            </div>
+            <!-- Footer -->
+           @*  <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="text-center my-auto">
+                        <small>© 2025 Your Company</small>
+                    </div>
+                </div>
+            </footer> *@
+        </div>
+    </div>
+=======
+﻿@{
+    ViewData["Title"] = "Employee Home";
+}
+
+
+<h1> welcome</h1>
+>>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5

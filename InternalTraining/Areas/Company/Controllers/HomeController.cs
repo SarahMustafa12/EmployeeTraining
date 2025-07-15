@@ -32,5 +32,25 @@ namespace InternalTraining.Areas.Company.Controllers
             }
             return View(course);
         }
+
+        public IActionResult Pricing()
+        {
+            return View();
+        }
+
+        public IActionResult About()
+        {
+            return View();
+        }
+        
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+        public IActionResult NotFoundPage()
+        { 
+            return View();
+        }
     }
 }

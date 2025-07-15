@@ -1,0 +1,361 @@
+﻿@* 
+ @model Course
+@{
+    var chapters = ViewBag.Chapters as List<Chapter>;
+    var lessons = ViewBag.Lessons as List<Lesson>;
+    var totalLessons = lessons.Count;
+    @Html.AntiForgeryToken()
+    ;
+}
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- 🎥 Left: Course Info & Video -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h2 class="text-primary">@Model.Name</h2>
+                    <p class="text-dark">@Model.Description</p>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white d-flex align-items-center" style="background-color:#143d60 !important">
+                    <h5 class="m-0" id="lessonTitle">Lesson Player</h5>
+                </div>
+                <div class="card-body">
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe id="lessonVideo" class="embed-responsive-item" src="" allowfullscreen></iframe>
+                    </div>
+                    <button id="nextLessonBtn" class="btn btn-primary mt-3" style="display: none;">Next Lesson</button>
+                </div>
+            </div>
+
+            <!-- 📊 Progress Bar -->
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <label><strong>Course Progress:</strong></label>
+                    <div class="progress">
+                        <div id="courseProgress" class="progress-bar bg-success" role="progressbar" style="width: 0%">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📚 Right: Chapters & Lessons -->
+        <div class="col-lg-4" id="chaptersContainer">
+            @for (int i = 0; i < chapters.Count; i++)
+            {
+                var chapter = chapters[i];
+                var chapterLessons = lessons.Where(l => l.ChapterId == chapter.Id).ToList();
+                var collapseId = $"chapter{i + 1}Lessons";
+
+                <div class="card shadow mb-3">
+                    <div class="card-header d-flex justify-content-between align-items-center" data-toggle="collapse" href="#@collapseId" role="button" aria-expanded="false" aria-controls="@collapseId" style="cursor:pointer;">
+                        <h6 class="m-0 font-weight-bold text-primary">Chapter @(i + 1): @chapter.Name</h6>
+                        <span class="text-muted">Click to expand</span>
+                    </div>
+                    <div class="collapse" id="@collapseId">
+                        <div class="card-body">
+                            <ul class="list-group">
+                                @for (int j = 0; j < chapterLessons.Count; j++)
+                                {
+                                    var lesson = chapterLessons[j];
+                                    <li class="list-group-item d-flex justify-content-between align-items-center" id="lesson-@lesson.Id">
+                                        <div>
+                                            <input type="checkbox" class="mr-2" disabled />
+                                            Lesson @(j + 1): @lesson.Title
+                                            <span class="ml-2 text-success" id="completed-icon-@lesson.Id" style="display:none;">✅</span>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="loadVideo('@lesson.ContentUrl', '@lesson.Title', @lesson.Id)">Watch</button>
+                                    </li>
+                                }
+                            </ul>
+                            <hr />
+                            <a href="/chapter/@chapter.Id/exam" class="btn btn-success btn-sm mt-2 w-100">
+                                Take Chapter @(i + 1) Exam
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .active-lesson {
+        background-color: #e2f0ff;
+        font-weight: bold;
+    }
+</style>
+
+<script>
+    const totalLessons = @totalLessons;
+    let completedLessons = 0;
+
+    function toEmbedUrl(url) {
+        if (!url) return "";
+        const vMatch = url.match(/[?&]v=([^&]+)/);
+        if (!vMatch) return url;
+        const videoId = vMatch[1];
+        const tMatch = url.match(/[?&](?:t|start)=(\d+)s?/);
+        const startTime = tMatch ? tMatch[1] : null;
+        return `https://www.youtube.com/embed/${videoId}` + (startTime ? `?start=${startTime}` : "");
+    }
+
+    function loadVideo(videoUrl, lessonTitle, lessonId) {
+        const embedUrl = toEmbedUrl(videoUrl);
+        document.getElementById("lessonVideo").src = embedUrl;
+        document.getElementById("lessonTitle").textContent = lessonTitle;
+
+        document.querySelectorAll(".list-group-item").forEach(el => el.classList.remove("active-lesson"));
+        const current = document.getElementById("lesson-" + lessonId);
+        if (current) current.classList.add("active-lesson");
+
+        markLessonCompleted(lessonId);
+
+        // 🟦 Next Lesson Setup
+        setupNextLesson(lessonId);
+    }
+
+    function setupNextLesson(currentLessonId) {
+        const currentLessonItem = document.getElementById("lesson-" + currentLessonId);
+        const nextLessonItem = currentLessonItem?.nextElementSibling;
+
+        const nextBtn = document.getElementById("nextLessonBtn");
+        if (nextLessonItem && nextLessonItem.querySelector("button")) {
+            nextBtn.style.display = 'block';
+            nextBtn.onclick = function () {
+                nextLessonItem.querySelector("button").click();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+        } else {
+            nextBtn.style.display = 'none';
+        }
+    }
+
+    function markLessonCompleted(lessonId) {
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+        const formData = new FormData();
+        formData.append('lessonId', lessonId);
+        formData.append('__RequestVerificationToken', token);
+
+        fetch('/Employee/Home/MarkLessonCompleted', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // ✅ Show check icon + check checkbox
+                const icon = document.getElementById(`completed-icon-${lessonId}`);
+                const checkbox = document.querySelector(`#lesson-${lessonId} input[type="checkbox"]`);
+                if (icon) icon.style.display = 'inline';
+                if (checkbox) checkbox.checked = true;
+
+                // 📊 Update progress bar
+                completedLessons++;
+                const percent = Math.round((completedLessons / totalLessons) * 100);
+                const bar = document.getElementById("courseProgress");
+                bar.style.width = percent + "%";
+                bar.innerText = percent + "%";
+            }
+        })
+        .catch(err => console.error("❌ AJAX error:", err));
+    }
+</script>
+ *@ 
+ @model Course
+@{
+    var chapters = ViewBag.Chapters as List<Chapter>;
+    var lessons = ViewBag.Lessons as List<Lesson>;
+    var completedLessonIds = ViewBag.CompletedLessonIds as List<int> ?? new List<int>();
+
+    // Calculate total lessons count for progress bar
+    int totalLessons = lessons.Count;
+    int completedCount = completedLessonIds.Count;
+    int progressPercent = totalLessons == 0 ? 0 : (int)Math.Round((completedCount * 100.0) / totalLessons);
+}
+<style>
+    .bg-success {
+        background-color: #666 !important;
+    }
+</style>
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- 🎥 Left: Course Info & Video -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h2 class="text-primary">@Model.Name</h2>
+                    <p class="text-dark">@Model.Description</p>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white d-flex align-items-center" style="background-color:#143d60 !important">
+                    <h5 class="m-0" id="lessonTitle">Lesson Player</h5>
+                </div>
+                <div class="card-body">
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe id="lessonVideo" class="embed-responsive-item" src="" allowfullscreen></iframe>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="progress mt-3" style="height: 25px;">
+                        <div id="courseProgress" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar"
+                             style="width: @progressPercent%" aria-valuenow="@progressPercent" aria-valuemin="0" aria-valuemax="100">
+                            @progressPercent%
+                        </div>
+                    </div>
+
+                    <!-- Next Lesson Button -->
+                    <button id="nextLessonBtn" class="btn btn-primary mt-3" onclick="playNextLesson()" disabled>Next Lesson</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📚 Right: Chapters & Lessons -->
+        <div class="col-lg-4" id="chaptersContainer">
+            @for (int i = 0; i < chapters.Count; i++)
+            {
+                var chapter = chapters[i];
+                var chapterLessons = lessons.Where(l => l.ChapterId == chapter.Id).ToList();
+                var collapseId = $"chapter{i + 1}Lessons";
+
+                <div class="card shadow mb-3">
+                    <div class="card-header d-flex justify-content-between align-items-center" data-toggle="collapse" href="#@collapseId" role="button" aria-expanded="false" aria-controls="@collapseId" style="cursor:pointer;">
+                        <h6 class="m-0 font-weight-bold text-primary">Chapter @(i + 1): @chapter.Name</h6>
+                        <span class="text-muted">Click to expand</span>
+                    </div>
+                    <div class="collapse" id="@collapseId">
+                        <div class="card-body">
+                            <ul class="list-group">
+                                @for (int j = 0; j < chapterLessons.Count; j++)
+                                {
+                                    var lesson = chapterLessons[j];
+                                    var isCompleted = completedLessonIds.Contains(lesson.Id);
+                                    <li class="list-group-item d-flex justify-content-between align-items-center" id="lesson-@lesson.Id">
+                                        <div>
+                                            <input type="checkbox" class="mr-2" disabled @(isCompleted ? "checked" : "") />
+                                            Lesson @(j + 1): @lesson.Title
+                                            <span class="ml-2 text-success" id="completed-icon-@lesson.Id" style="@(isCompleted ? "display:inline;" : "display:none;")">✅</span>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="loadVideo('@lesson.ContentUrl', '@lesson.Title', @lesson.Id)">Watch</button>
+                                    </li>
+                                }
+                            </ul>
+                            <hr />
+                            <a href="/chapter/@chapter.Id/exam" class="btn btn-success btn-sm mt-2 w-100">
+                                Take Chapter @(i + 1) Exam
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .active-lesson {
+        background-color: #e2f0ff;
+        font-weight: bold;
+    }
+</style>
+
+<script>
+    let currentLessonIndex = -1;
+    let allLessons = [];
+
+    // Flatten all lessons into one array with Id, Title, ContentUrl for "Next Lesson" functionality
+    (function initializeLessons() {
+    @* Prepare JS array of all lessons *@
+        allLessons = [
+    @foreach (var l in lessons)
+    {
+        @: { id: @l.Id, title: '@l.Title', url: '@l.ContentUrl' },
+    }
+        ];
+    })();
+
+    function toEmbedUrl(url) {
+        if (!url) return "";
+        const vMatch = url.match(/[?&]v=([^&]+)/);
+        if (!vMatch) return url;
+        const videoId = vMatch[1];
+        const tMatch = url.match(/[?&](?:t|start)=(\d+)s?/);
+        const startTime = tMatch ? tMatch[1] : null;
+        return `https://www.youtube.com/embed/${videoId}` + (startTime ? `?start=${startTime}` : "");
+    }
+
+    function loadVideo(videoUrl, lessonTitle, lessonId) {
+        const embedUrl = toEmbedUrl(videoUrl);
+        document.getElementById("lessonVideo").src = embedUrl;
+        document.getElementById("lessonTitle").textContent = lessonTitle;
+
+        // Highlight the current lesson
+        document.querySelectorAll(".list-group-item").forEach(el => el.classList.remove("active-lesson"));
+        const current = document.getElementById("lesson-" + lessonId);
+        if (current) current.classList.add("active-lesson");
+
+        // Enable "Next Lesson" button if next lesson exists
+        currentLessonIndex = allLessons.findIndex(l => l.id === lessonId);
+        const nextLessonBtn = document.getElementById("nextLessonBtn");
+        if (currentLessonIndex >= 0 && currentLessonIndex < allLessons.length - 1) {
+            nextLessonBtn.disabled = false;
+        } else {
+            nextLessonBtn.disabled = true;
+        }
+
+        // Record lesson completion
+        markLessonCompleted(lessonId);
+    }
+
+    function markLessonCompleted(lessonId) {
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+        const formData = new FormData();
+        formData.append('lessonId', lessonId);
+        if (token) formData.append('__RequestVerificationToken', token);
+
+        fetch('/Employee/Home/MarkLessonCompleted', {
+            method: 'POST',
+            body: formData
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    console.error("❌ Error:", data.error);
+                } else {
+                    // On success, check the checkbox and show the ✅ icon
+                    const checkbox = document.querySelector(`#lesson-${lessonId} input[type="checkbox"]`);
+                    const icon = document.getElementById(`completed-icon-${lessonId}`);
+                    if (checkbox) checkbox.checked = true;
+                    if (icon) icon.style.display = 'inline';
+
+                    // Update progress bar
+                    updateProgressBar(data.completedLessonsCount, data.totalLessons);
+                }
+            })
+            .catch(err => console.error("❌ AJAX error:", err));
+    }
+
+    function updateProgressBar(completed, total) {
+        const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+        const bar = document.getElementById("courseProgress");
+        bar.style.width = percent + "%";
+        bar.innerText = percent + "%";
+    }
+
+    function playNextLesson() {
+        if (currentLessonIndex >= 0 && currentLessonIndex < allLessons.length - 1) {
+            const nextLesson = allLessons[currentLessonIndex + 1];
+            loadVideo(nextLesson.url, nextLesson.title, nextLesson.id);
+        }
+    }
+</script>

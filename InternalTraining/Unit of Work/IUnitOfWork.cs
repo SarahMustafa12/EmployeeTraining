@@ -18,9 +18,24 @@ namespace InternalTraining.Unit_of_Work
         IRepository<Payment> Payments { get; }
         IRepository<Question> Questions { get; }
         IRepository<Cart> Carts { get; }
-        IRepository<FirstPayment> FirstPayments { get; }
+        IRepository<CompanyUser> CompanyUsers { get; }
+        IRepository<EmployeeUser> EmployeeUsers { get; }
 
+        IRepository<FirstPayment> FirstPayments { get; }
+        IRepository<EmployeeCourse> EmployeeCourses { get; }
         IRepository<BookingCourse> BookingCourses { get; }
+
+        IRepository<CourseInvitation> CourseInvitations { get; }
+
+        IRepository<SecondPayment> SecondPayments  { get; }
+
+        IRepository<CompanyContactUs> CompnanyContactsUs { get; }
+        IRepository<ApplicationUser> ApplicationUsers { get; }
+<<<<<<< HEAD
+        IRepository<EmployeeLessonProgress> EmployeeLessonsProgress { get; }
+        IRepository<EmployeeChapterExam> EmployeeChaptersExam { get; }
+=======
+>>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
 
         void Commit();
 

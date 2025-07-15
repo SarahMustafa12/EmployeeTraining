@@ -1,0 +1,83 @@
+﻿@model InternalTraining.Models.Course
+@using System.Linq
+
+<main class="main">
+    <!-- Course Details Section -->
+    <section id="course-details" class="section course-details">
+        <div class="container" data-aos="fade-up">
+
+            <div class="section-title">
+                <h2>Course Details</h2>
+                <p>@Model.Name</p>
+            </div>
+
+            <div class="row gy-4">
+
+                <div class="col-lg-5 d-flex align-items-center justify-content-center">
+                    @{
+                        var imageSrc = string.IsNullOrWhiteSpace(Model.CourseImage)
+                        ? Url.Content("~/images/admin/default-course.png")
+                        : (Model.CourseImage.StartsWith("http")
+                        ? Model.CourseImage
+                        : Url.Content("~/images/admin/" + Model.CourseImage));
+                    }
+
+                    <img src="@imageSrc"
+                         alt="@Model.Name Image"
+                         class="rounded-circle"
+                         style="width: 150px; height: 150px; object-fit: cover;" />
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="course-content">
+                        <h3>@Model.Name</h3>
+
+                        <p class="description">@Model.Description</p>
+
+                        <ul class="list-unstyled mt-3">
+                            <li><strong>Number of Chapters:</strong> @(Model.Chapters?.Count ?? 0)</li>
+                            @* <li><strong>Number of Chapters:</strong> @(Model.NumberOfChapters)</li> *@
+                        </ul>
+
+                        @if (Model.Chapters != null && Model.Chapters.Any())
+                        {
+                                <h4 class="mt-4">Chapters and Lessons</h4>
+                                <ul>
+                                @foreach (var chapter in Model.Chapters)
+                                {
+                                            <li>
+                                                <strong>@chapter.Name</strong>
+                                        @if (chapter.Lessons != null && chapter.Lessons.Any())
+                                        {
+                                                        <ul>
+                                                @foreach (var lesson in chapter.Lessons)
+                                                {
+                                                                    <li>@lesson.Title</li>
+                                                }
+                                                        </ul>
+                                        }
+                                        else
+                                        {
+                                                        <p><em>No lessons available.</em></p>
+                                        }
+                                            </li>
+                                }
+                                </ul>
+                        }
+                        else
+                        {
+                                <p class="mt-4"><em>No chapters available.</em></p>
+                        }
+
+                        <a href="@Url.Action("Index", "Home", new { area = "Company2" })"
+                           class="btn btn-secondary mt-4"
+                           style="background-color: #143D60; color: #fff; border-color: #143D60;">
+                            ← Back
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>

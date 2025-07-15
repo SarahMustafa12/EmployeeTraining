@@ -104,6 +104,9 @@ namespace InternalTraining.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CompanyUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
@@ -114,6 +117,8 @@ namespace InternalTraining.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CompanyUserId");
 
                     b.HasIndex("CourseId");
 
@@ -160,7 +165,7 @@ namespace InternalTraining.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
-                    b.Property<string>("EmployeeId")
+                    b.Property<string>("EmployeeUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -174,7 +179,7 @@ namespace InternalTraining.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.HasIndex("EmployeeId");
+                    b.HasIndex("EmployeeUserId");
 
                     b.ToTable("Certificate");
                 });
@@ -204,7 +209,32 @@ namespace InternalTraining.Migrations
                     b.ToTable("Chapters");
                 });
 
-            modelBuilder.Entity("InternalTraining.Models.Company", b =>
+            modelBuilder.Entity("InternalTraining.Models.CompanyContactUs", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool?>("IsAnswered")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("CompanyContactsUs");
+                });
+
+            modelBuilder.Entity("InternalTraining.Models.CompanyUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -213,34 +243,17 @@ namespace InternalTraining.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ContactUsId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ProfilePicturePath")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Company");
-                });
+                    b.HasIndex("ContactUsId");
 
-            modelBuilder.Entity("InternalTraining.Models.CompanyCourse", b =>
-                {
-                    b.Property<string>("CompanyId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PaymentStatus")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("CompanyId", "CourseId");
-
-                    b.HasIndex("CourseId");
-
-                    b.ToTable("CompanyCourse");
+                    b.ToTable("CompanyUsers");
                 });
 
             modelBuilder.Entity("InternalTraining.Models.ContactUs", b =>
@@ -333,7 +346,7 @@ namespace InternalTraining.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
-                    b.Property<string>("EmployeeId")
+                    b.Property<string>("EmployeeUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -344,34 +357,143 @@ namespace InternalTraining.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.HasIndex("EmployeeId");
+                    b.HasIndex("EmployeeUserId");
 
                     b.ToTable("CourseFeedbacks");
                 });
 
-            modelBuilder.Entity("InternalTraining.Models.Employee", b =>
+            modelBuilder.Entity("InternalTraining.Models.CourseInvitation", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CompanyUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CompanyId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Department")
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProfilePicturePath")
-                        .IsRequired()
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Paid")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("SecondPaymentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompanyId");
+                    b.HasIndex("CompanyUserId");
 
-                    b.ToTable("Employee");
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("SecondPaymentId");
+
+                    b.ToTable("CourseInvitations");
                 });
 
+<<<<<<< HEAD
+            modelBuilder.Entity("InternalTraining.Models.EmployeeChapterExam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChapterId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EmployeeUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<double>("Score")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("TakenOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChapterId");
+
+                    b.HasIndex("EmployeeUserId");
+
+                    b.ToTable("EmployeeChaptersExam");
+                });
+
+=======
+>>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
+            modelBuilder.Entity("InternalTraining.Models.EmployeeCourse", b =>
+                {
+                    b.Property<string>("EmployeeUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("InvitedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("EmployeeUserId", "CourseId");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("employeeCourses");
+                });
+
+<<<<<<< HEAD
+            modelBuilder.Entity("InternalTraining.Models.EmployeeLessonProgress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CompletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmployeeUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LessonId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeUserId");
+
+                    b.HasIndex("LessonId");
+
+                    b.ToTable("EmployeeLessonsProgress");
+                });
+
+=======
+>>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
             modelBuilder.Entity("InternalTraining.Models.EmployeeProgress", b =>
                 {
                     b.Property<int>("Id")
@@ -383,7 +505,7 @@ namespace InternalTraining.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
-                    b.Property<string>("EmployeeId")
+                    b.Property<string>("EmployeeUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -397,9 +519,33 @@ namespace InternalTraining.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.HasIndex("EmployeeId");
+                    b.HasIndex("EmployeeUserId");
 
                     b.ToTable("EmployeesProgress");
+                });
+
+            modelBuilder.Entity("InternalTraining.Models.EmployeeUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CompanyUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Department")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfilePicturePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyUserId");
+
+                    b.ToTable("EmployeeUsers");
                 });
 
             modelBuilder.Entity("InternalTraining.Models.Exam", b =>
@@ -527,6 +673,10 @@ namespace InternalTraining.Migrations
 
                     b.Property<string>("CompanyId")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CompanyUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("Date")
@@ -546,7 +696,7 @@ namespace InternalTraining.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompanyId");
+                    b.HasIndex("CompanyUserId");
 
                     b.ToTable("Payments");
                 });
@@ -579,7 +729,7 @@ namespace InternalTraining.Migrations
                     b.ToTable("Questions");
                 });
 
-            modelBuilder.Entity("InternalTraining.Models.ViewModel.ForgetPasswordVm", b =>
+            modelBuilder.Entity("InternalTraining.Models.SecondPayment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -587,129 +737,35 @@ namespace InternalTraining.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Email")
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("CompanyUserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ForgetPasswordVm");
-                });
-
-            modelBuilder.Entity("InternalTraining.Models.ViewModel.LoginVm", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("RememberMe")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LoginVm");
-                });
-
-            modelBuilder.Entity("InternalTraining.Models.ViewModel.ProfileVm", b =>
-                {
-                    b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ConfirmPassword")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CurrentPassword")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NewPassword")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProfilePicture")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProfileVm");
-                });
-
-            modelBuilder.Entity("InternalTraining.Models.ViewModel.RegisterVm", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("CourseId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ConfirmPassword")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RegisterVm");
-                });
-
-            modelBuilder.Entity("InternalTraining.Models.ViewModel.ResetPasswordVm", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("NumberOfEmployees")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("ConfirmPassword")
-                        .IsRequired()
+                    b.Property<string>("SesstionId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NewPassword")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
+                    b.Property<string>("StripePaymentId")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ResetPasswordVm");
+                    b.HasIndex("CompanyUserId");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("SecondPayments");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -847,8 +903,12 @@ namespace InternalTraining.Migrations
 
             modelBuilder.Entity("InternalTraining.Models.BookingCourse", b =>
                 {
+                    b.HasOne("InternalTraining.Models.CompanyUser", "CompanyUser")
+                        .WithMany("BookingCourses")
+                        .HasForeignKey("CompanyUserId");
+
                     b.HasOne("InternalTraining.Models.Course", "Course")
-                        .WithMany()
+                        .WithMany("CompanyCourses")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -858,6 +918,8 @@ namespace InternalTraining.Migrations
                         .HasForeignKey("FirstPaymentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CompanyUser");
 
                     b.Navigation("Course");
 
@@ -891,9 +953,9 @@ namespace InternalTraining.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("InternalTraining.Models.Employee", "Employee")
+                    b.HasOne("InternalTraining.Models.EmployeeUser", "Employee")
                         .WithMany("Certificates")
-                        .HasForeignKey("EmployeeId")
+                        .HasForeignKey("EmployeeUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -913,34 +975,32 @@ namespace InternalTraining.Migrations
                     b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("InternalTraining.Models.Company", b =>
+            modelBuilder.Entity("InternalTraining.Models.CompanyContactUs", b =>
                 {
                     b.HasOne("InternalTraining.Models.ApplicationUser", "ApplicationUser")
-                        .WithOne("Company")
-                        .HasForeignKey("InternalTraining.Models.Company", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("CompanyContactsUs")
+                        .HasForeignKey("ApplicationUserId");
 
                     b.Navigation("ApplicationUser");
                 });
 
-            modelBuilder.Entity("InternalTraining.Models.CompanyCourse", b =>
+            modelBuilder.Entity("InternalTraining.Models.CompanyUser", b =>
                 {
-                    b.HasOne("InternalTraining.Models.Company", "Company")
-                        .WithMany("CompanyCourses")
-                        .HasForeignKey("CompanyId")
+                    b.HasOne("InternalTraining.Models.ContactUs", "ContactUs")
+                        .WithMany()
+                        .HasForeignKey("ContactUsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("InternalTraining.Models.Course", "Course")
-                        .WithMany("CompanyCourses")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("InternalTraining.Models.ApplicationUser", "ApplicationUser")
+                        .WithOne("CompanyUser")
+                        .HasForeignKey("InternalTraining.Models.CompanyUser", "Id")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Company");
+                    b.Navigation("ApplicationUser");
 
-                    b.Navigation("Course");
+                    b.Navigation("ContactUs");
                 });
 
             modelBuilder.Entity("InternalTraining.Models.CourseFeedback", b =>
@@ -951,32 +1011,105 @@ namespace InternalTraining.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("InternalTraining.Models.Employee", "Employee")
+                    b.HasOne("InternalTraining.Models.EmployeeUser", "EmployeeUser")
                         .WithMany()
-                        .HasForeignKey("EmployeeId")
+                        .HasForeignKey("EmployeeUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Course");
 
-                    b.Navigation("Employee");
+                    b.Navigation("EmployeeUser");
                 });
 
-            modelBuilder.Entity("InternalTraining.Models.Employee", b =>
+            modelBuilder.Entity("InternalTraining.Models.CourseInvitation", b =>
                 {
-                    b.HasOne("InternalTraining.Models.Company", null)
-                        .WithMany("Employees")
-                        .HasForeignKey("CompanyId");
-
-                    b.HasOne("InternalTraining.Models.ApplicationUser", "ApplicationUser")
-                        .WithOne("Employee")
-                        .HasForeignKey("InternalTraining.Models.Employee", "Id")
+                    b.HasOne("InternalTraining.Models.CompanyUser", "CompanyUser")
+                        .WithMany()
+                        .HasForeignKey("CompanyUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ApplicationUser");
+                    b.HasOne("InternalTraining.Models.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InternalTraining.Models.SecondPayment", "SecondPayment")
+                        .WithMany("CourseInvitations")
+                        .HasForeignKey("SecondPaymentId");
+
+                    b.Navigation("CompanyUser");
+
+                    b.Navigation("Course");
+
+                    b.Navigation("SecondPayment");
                 });
 
+<<<<<<< HEAD
+            modelBuilder.Entity("InternalTraining.Models.EmployeeChapterExam", b =>
+                {
+                    b.HasOne("InternalTraining.Models.Chapter", "Chapter")
+                        .WithMany()
+                        .HasForeignKey("ChapterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InternalTraining.Models.EmployeeUser", "EmployeeUser")
+                        .WithMany()
+                        .HasForeignKey("EmployeeUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chapter");
+
+                    b.Navigation("EmployeeUser");
+                });
+
+=======
+>>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
+            modelBuilder.Entity("InternalTraining.Models.EmployeeCourse", b =>
+                {
+                    b.HasOne("InternalTraining.Models.Course", "Course")
+                        .WithMany("EmployeeCourses")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InternalTraining.Models.EmployeeUser", "EmployeeUser")
+                        .WithMany("EmployeeCourses")
+                        .HasForeignKey("EmployeeUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("EmployeeUser");
+                });
+
+<<<<<<< HEAD
+            modelBuilder.Entity("InternalTraining.Models.EmployeeLessonProgress", b =>
+                {
+                    b.HasOne("InternalTraining.Models.EmployeeUser", "EmployeeUser")
+                        .WithMany()
+                        .HasForeignKey("EmployeeUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InternalTraining.Models.Lesson", "Lesson")
+                        .WithMany()
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EmployeeUser");
+
+                    b.Navigation("Lesson");
+                });
+
+=======
+>>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
             modelBuilder.Entity("InternalTraining.Models.EmployeeProgress", b =>
                 {
                     b.HasOne("InternalTraining.Models.Course", "Course")
@@ -985,15 +1118,34 @@ namespace InternalTraining.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("InternalTraining.Models.Employee", "Employee")
+                    b.HasOne("InternalTraining.Models.EmployeeUser", "EmployeeUser")
                         .WithMany("Progresses")
-                        .HasForeignKey("EmployeeId")
+                        .HasForeignKey("EmployeeUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Course");
 
-                    b.Navigation("Employee");
+                    b.Navigation("EmployeeUser");
+                });
+
+            modelBuilder.Entity("InternalTraining.Models.EmployeeUser", b =>
+                {
+                    b.HasOne("InternalTraining.Models.CompanyUser", "CompanyUser")
+                        .WithMany("EmployeeUsers")
+                        .HasForeignKey("CompanyUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("InternalTraining.Models.ApplicationUser", "ApplicationUser")
+                        .WithOne("EmployeeUser")
+                        .HasForeignKey("InternalTraining.Models.EmployeeUser", "Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("CompanyUser");
                 });
 
             modelBuilder.Entity("InternalTraining.Models.Exam", b =>
@@ -1029,7 +1181,7 @@ namespace InternalTraining.Migrations
                     b.HasOne("InternalTraining.Models.Course", "Course")
                         .WithMany("Lessons")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Chapter");
@@ -1050,13 +1202,13 @@ namespace InternalTraining.Migrations
 
             modelBuilder.Entity("InternalTraining.Models.Payment", b =>
                 {
-                    b.HasOne("InternalTraining.Models.Company", "Company")
+                    b.HasOne("InternalTraining.Models.CompanyUser", "CompanyUser")
                         .WithMany()
-                        .HasForeignKey("CompanyId")
+                        .HasForeignKey("CompanyUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Company");
+                    b.Navigation("CompanyUser");
                 });
 
             modelBuilder.Entity("InternalTraining.Models.Question", b =>
@@ -1068,6 +1220,25 @@ namespace InternalTraining.Migrations
                         .IsRequired();
 
                     b.Navigation("Exam");
+                });
+
+            modelBuilder.Entity("InternalTraining.Models.SecondPayment", b =>
+                {
+                    b.HasOne("InternalTraining.Models.CompanyUser", "CompanyUser")
+                        .WithMany()
+                        .HasForeignKey("CompanyUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InternalTraining.Models.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CompanyUser");
+
+                    b.Navigation("Course");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1123,11 +1294,11 @@ namespace InternalTraining.Migrations
 
             modelBuilder.Entity("InternalTraining.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("Company")
-                        .IsRequired();
+                    b.Navigation("CompanyContactsUs");
 
-                    b.Navigation("Employee")
-                        .IsRequired();
+                    b.Navigation("CompanyUser");
+
+                    b.Navigation("EmployeeUser");
                 });
 
             modelBuilder.Entity("InternalTraining.Models.Chapter", b =>
@@ -1138,11 +1309,11 @@ namespace InternalTraining.Migrations
                     b.Navigation("Lessons");
                 });
 
-            modelBuilder.Entity("InternalTraining.Models.Company", b =>
+            modelBuilder.Entity("InternalTraining.Models.CompanyUser", b =>
                 {
-                    b.Navigation("CompanyCourses");
+                    b.Navigation("BookingCourses");
 
-                    b.Navigation("Employees");
+                    b.Navigation("EmployeeUsers");
                 });
 
             modelBuilder.Entity("InternalTraining.Models.Course", b =>
@@ -1153,6 +1324,8 @@ namespace InternalTraining.Migrations
 
                     b.Navigation("CompanyCourses");
 
+                    b.Navigation("EmployeeCourses");
+
                     b.Navigation("Feedbacks");
 
                     b.Navigation("Lessons");
@@ -1160,9 +1333,11 @@ namespace InternalTraining.Migrations
                     b.Navigation("Progresses");
                 });
 
-            modelBuilder.Entity("InternalTraining.Models.Employee", b =>
+            modelBuilder.Entity("InternalTraining.Models.EmployeeUser", b =>
                 {
                     b.Navigation("Certificates");
+
+                    b.Navigation("EmployeeCourses");
 
                     b.Navigation("Progresses");
                 });
@@ -1175,6 +1350,11 @@ namespace InternalTraining.Migrations
             modelBuilder.Entity("InternalTraining.Models.Question", b =>
                 {
                     b.Navigation("Options");
+                });
+
+            modelBuilder.Entity("InternalTraining.Models.SecondPayment", b =>
+                {
+                    b.Navigation("CourseInvitations");
                 });
 #pragma warning restore 612, 618
         }

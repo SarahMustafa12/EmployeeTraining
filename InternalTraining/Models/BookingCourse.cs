@@ -8,5 +8,8 @@
         public int CourseId { get; set; }
         public Course Course { get; set; }
         public double Price { get; set; }
+        public string? CompanyUserId { get; set; }  
+        public CompanyUser? CompanyUser { get; set; }
+
     }
 }

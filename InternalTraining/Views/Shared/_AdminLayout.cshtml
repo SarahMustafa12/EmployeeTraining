@@ -82,6 +82,9 @@
                         <a class="collapse-item" href="/Admin/Lesson/index">Lesson</a>
                         <a class="collapse-item" href="/Admin/Exam/index">Exam</a>
                         <a class="collapse-item" href="/Admin/ContactUs/index">Contact Us</a>
+                        <a class="collapse-item" href="/Admin/CompanyContact/index">Company Contact Us</a>
+                        <a class="collapse-item" href="/Admin/User/Index">Users</a>
+
                         <a class="collapse-item" href="/Company/Home/index">Home</a>
 
 
@@ -331,7 +334,7 @@
                                        Welcome @User.Identity.Name
                                     </span>
 
-                                    <img id="profilePic" src="/admin/img/undraw_profile.svg" class="img-profile rounded-circle" />
+                                    <img id="profilePic" src="/admin/img/@currentUser.ProfilePicturePath" class="img-profile rounded-circle" />
 
                                 </a>
                             }

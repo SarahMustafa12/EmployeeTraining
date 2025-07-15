@@ -1,0 +1,139 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+@model IEnumerable<ApplicationUser>
+
+<div class="container-fluid">
+
+    <!-- Title & Create Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="/Admin/User/Index" class="btn btn-primary btn-icon-split">
+            <h6 class="text">All Users</h6>
+        </a>
+        <a href="/Identity/Account/Register" class="btn btn-primary btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-plus"></i>
+            </span>
+            <span class="text">Add Admin</span>
+        </a>
+    </div>
+
+    <!-- Contact Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">User List</h6>
+
+            <a href="/Admin/User/Index?isAdmin=true" class="btn btn-primary btn-icon-split">
+                <h6 class="text">Admin</h6>
+            </a>
+
+            <a href="/Admin/User/Index?Answerd=true" class="btn btn-primary btn-icon-split">
+                <h6 class="text">Company</h6>
+            </a>
+            <a href="/Admin/User/Index?Answerd=true" class="btn btn-primary btn-icon-split">
+                <h6 class="text">Employee</h6>
+            </a>
+            <form method="get" action="/Admin/User/Index" class="form-inline">
+                <div class="input-group">
+                    <input type="text" class="form-control bg-light small" name="query" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2" style="border: 2px solid #fff;">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search fa-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Full Name</th>
+                            <th> Email</th>
+                            <th>Role</th>
+                          @*   <th>Actions</th> *@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Repeat this row dynamically with backend -->
+                        @foreach (var user in Model)
+                        {
+                            var role = (await UserManager.GetRolesAsync(user)).FirstOrDefault();
+                            <tr>
+                                <td>@user.FirstName @user.LastName</td>
+                                <td>@user.Email</td>
+                                <td>@role</td>
+                               @*  <td>
+                                    <button class="btn btn-danger btn-sm" onclick="confirmBlock('@user.Id')">
+                                        <i class="fas fa-user-slash"></i> Block
+                                    </button>
+
+                                    <button class="btn btn-success btn-sm" onclick="confirmUnblock('@user.Id')">
+                                        <i class="fas fa-user-check"></i> Unblock
+                                    </button>
+
+                                </td> *@
+                            </tr>
+                        }
+
+                        <!-- End repeat -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-end">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1"><i class="fas fa-chevron-left"></i></a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="/Admin/Category/Index?page=1">1</a></li>
+                    <li class="page-item"><a class="page-link" href="/Admin/Category/Index?page=2">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmBlock(userId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This will block the user from logging in!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#143D60",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Yes, Block!",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/Admin/User/BlockUser?userId=" + userId;
+            }
+        });
+    }
+
+    function confirmUnblock(id) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This will unblock the user and allow login!",
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonColor: "#28a745",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Yes, Unblock!",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/Admin/User/UnblockUser?id=" + id;
+            }
+        });
+    }
+</script>
+
+

@@ -1,0 +1,92 @@
+﻿@* @model EmployeeExamsResult
+@{
+    ViewData["Title"] = "Exam Result";
+    var exam = Model.Exam;
+}
+
+<div class="container-fluid">
+
+    <!-- Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Result for: @exam.Name</h1>
+    </div>
+
+    <!-- Score Overview -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow border-left-primary py-2">
+                <div class="card-body">
+                    <h5 class="text-primary">Score: <strong>@Model.Score</strong> / <strong>@(exam.Questions.Count * 2)</strong></h5>
+                    <p>Status: 
+                        @if (Model.IsPassed)
+                        {
+                                <span class="badge badge-success">Passed</span>
+                        }
+                        else
+                        {
+                                <span class="badge badge-danger">Failed</span>
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Breakdown -->
+    <div class="accordion" id="questionAccordion">
+        @for (int i = 0; i < exam.Questions.Count; i++)
+        {
+            var question = exam.Questions.ElementAt(i);
+            var userAnswer = Model.EmployeeAnswers.FirstOrDefault(a => a.QuestionId == question.Id)?.SelectedAnswer;
+            var correctOption = question.Options.FirstOrDefault(o => o.Id == question.CorrectAnswer);
+            var userOption = question.Options.FirstOrDefault(o => o.Id == userAnswer);
+
+            bool isCorrect = userAnswer == question.CorrectAnswer;
+
+                <div class="card mb-3 border-left-@(isCorrect ? "success" : "danger")">
+                    <div class="card-header" id="heading@i">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link @(isCorrect ? "text-success" : "text-danger")" type="button" data-toggle="collapse" data-target="#collapse@i" aria-expanded="true" aria-controls="collapse@i">
+                                Question @(i + 1): @question.Text
+                            </button>
+                        </h5>
+                    </div>
+
+                    <div id="collapse@i" class="collapse" aria-labelledby="heading@i" data-parent="#questionAccordion">
+                        <div class="card-body">
+                            <ul class="list-group mb-2">
+                            @foreach (var option in question.Options)
+                            {
+                                bool isUserAnswer = option.Id == userAnswer;
+                                bool isCorrectAnswer = option.Id == question.CorrectAnswer;
+                                string css = isCorrectAnswer ? "list-group-item-success" :
+                                             isUserAnswer ? "list-group-item-danger" : "";
+
+                                        <li class="list-group-item @css">
+                                    @option.Text
+                                    @if (isCorrectAnswer)
+                                    {
+                                                    <span class="badge badge-success ml-2">Correct</span>
+                                    }
+                                    else if (isUserAnswer)
+                                    {
+                                                    <span class="badge badge-danger ml-2">Your Answer</span>
+                                    }
+                                        </li>
+                            }
+                            </ul>
+                        @if (!isCorrect)
+                        {
+                                    <div class="text-danger">❌ Your answer was incorrect. Correct answer: <strong>@correctOption?.Text</strong></div>
+                        }
+                        else
+                        {
+                                    <div class="text-success">✅ Correct</div>
+                        }
+                        </div>
+                    </div>
+                </div>
+        }
+    </div>
+</div>
+ *@

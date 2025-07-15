@@ -4,9 +4,9 @@
     {
         public int Id { get; set; }
 
-        public string EmployeeId { get; set; }
+        public string EmployeeUserId { get; set; }
 
-        public Employee Employee { get; set; }
+        public EmployeeUser Employee { get; set; }
 
         public int CourseId { get; set; }
 

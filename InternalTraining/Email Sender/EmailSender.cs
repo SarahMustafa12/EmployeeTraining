@@ -2,7 +2,7 @@
 using System.Net.Mail;
 using System.Net;
 
-namespace E_TicketMovies.Email_Sender
+namespace InternalTraining.Email_Sender
 {
     public class EmailSender : IEmailSender
     {
@@ -12,11 +12,11 @@ namespace E_TicketMovies.Email_Sender
             {
                 EnableSsl = true,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential("sm3380719@gmail.com", "qqdv kayh yzot gupx")
+                Credentials = new NetworkCredential("semamentor@gmail.com", "mlgr lpfy sifl uowm")
             };
 
             return client.SendMailAsync(
-                new MailMessage(from: "sm3380719@gmail.com",
+                new MailMessage(from: "semamentor@gmail.com",
                                 to: email,
                                 subject,
                                 message

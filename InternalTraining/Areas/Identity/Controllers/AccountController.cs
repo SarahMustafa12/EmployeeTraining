@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
-using E_TicketMovies.Email_Sender;
+using InternalTraining.Email_Sender;
 using System.Security.Claims;
 
 namespace InternalTraining.Areas.Identity.Controllers
@@ -48,6 +48,7 @@ namespace InternalTraining.Areas.Identity.Controllers
                 {
                     UserName = registerVm.UserName,
                     Email = registerVm.Email,
+                    ProfilePicturePath = "undraw_profile.svg"
                 };
 
                 var IsExist = await userManager.FindByEmailAsync(registerVm.Email);
@@ -101,24 +102,50 @@ namespace InternalTraining.Areas.Identity.Controllers
                     var result = await userManager.CheckPasswordAsync(appUser, loginVm.Password);
                     if (result)
                     {
-                        await signInManager.SignInAsync(appUser, loginVm.RememberMe);
+                        
+                            var isInSelectedRole = await userManager.IsInRoleAsync(appUser, loginVm.UserType);
+                            if (!isInSelectedRole)
+                            {
+                                ModelState.AddModelError("UserType", $"You are not authorized as {loginVm.UserType}.");
+                                return View(loginVm);
+                            }
+
+                            await signInManager.SignInAsync(appUser, loginVm.RememberMe);
+
+                            // ✅ Redirect based on user type
+                            switch (loginVm.UserType)
+                            {
+                                case "Admin":
+                                    return RedirectToAction("Index", "Home", new { area = "Admin" });
+
+                                case "Company":
+                                    return RedirectToAction("Index", "Home", new { area = "Company2" });
+
+                                case "Employee":
+                                    return RedirectToAction("Index", "Home", new { area = "Employee" });
+
+                                default:
+                                    // Optional: fallback to home if role isn't handled
+                                    return RedirectToAction("Index", "Home", new { area = "Company" });
+                            }
+                        
 
                         // ✅ Redirect based on selected user type
-                        switch (loginVm.UserType)
-                        {
-                            case "Admin":
-                                return RedirectToAction("Index", "Home", new { area = "Admin" });
+                        //switch (loginVm.UserType)
+                        //{
+                        //    case "Admin":
+                        //        return RedirectToAction("Index", "Home", new { area = "Admin" });
 
-                            case "Company":
-                                return RedirectToAction("Index", "Home", new { area = "Company" });
+                        //    case "Company":
+                        //        return RedirectToAction("Index", "Home", new { area = "Company" });
 
-                            case "Employee":
-                                return RedirectToAction("Index", "Home", new { area = "Employee" });
+                        //    case "Employee":
+                        //        return RedirectToAction("Index", "Home", new { area = "Employee" });
 
-                            default:
-                                ModelState.AddModelError("UserType", "Invalid user type selected.");
-                                break;
-                        }
+                        //    default:
+                        //        ModelState.AddModelError("UserType", "Invalid user type selected.");
+                        //        break;
+                        //}
                     }
                     else
                     {
@@ -186,7 +213,7 @@ namespace InternalTraining.Areas.Identity.Controllers
             if (remoteError != null)
             {
                 ModelState.AddModelError(string.Empty, $"Error from external provider: {remoteError}");
-                return View(nameof(Login));
+                return View("Login");
             }
 
             var info = await signInManager.GetExternalLoginInfoAsync();
@@ -195,49 +222,84 @@ namespace InternalTraining.Areas.Identity.Controllers
                 return RedirectToAction(nameof(Login));
             }
 
+            // Try to sign in the user with the external login
             var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+
             if (result.Succeeded)
             {
-                return RedirectToAction("Index", "Home", new { area = "Admin" });
-            }
-            else
-            {
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-                var user = await userManager.FindByEmailAsync(email);
-
-                if (user == null)
+                // ✅ Get the user
+                var user = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+                if (user != null)
                 {
-                    user = new ApplicationUser
-                    {
-                        UserName = email,
-                        Email = email
-                    };
-                    var createResult = await userManager.CreateAsync(user);
-                    if (createResult.Succeeded)
-                    {
-                        await userManager.AddToRoleAsync(user, "Admin"); // optional
-                        await userManager.AddLoginAsync(user, info);
-                        await signInManager.SignInAsync(user, isPersistent: false);
+                    // ✅ Get role
+                    var role = (await userManager.GetRolesAsync(user)).FirstOrDefault();
+
+                    // ✅ Redirect based on role
+                    if (role == "Admin")
                         return RedirectToAction("Index", "Home", new { area = "Admin" });
-                    }
-                    else
-                    {
-                        return RedirectToAction(nameof(Register));
-                    }
+                    else if (role == "Company")
+                        return RedirectToAction("Index", "Home", new { area = "Company2" });
+                    else if (role == "Employee")
+                        return RedirectToAction("Index", "Home", new { area = "Employee" });
+
+                    // fallback
+                    return RedirectToAction("Index", "Home");
                 }
-
-                // ✅ لو المستخدم موجود، اربطه بالحساب الخارجي وسجّله دخول
-                await userManager.AddLoginAsync(user, info);
-                await signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Index", "Home", new { area = "Admin" });
             }
+
+            // ✅ If user doesn't exist, create a new one
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var userByEmail = await userManager.FindByEmailAsync(email);
+
+            if (userByEmail == null)
+            {
+                var newUser = new ApplicationUser
+                {
+                    UserName = email,
+                    Email = email
+                };
+
+                var createResult = await userManager.CreateAsync(newUser);
+                if (createResult.Succeeded)
+                {
+                    // ✅ Optional: assign default role
+                    await userManager.AddToRoleAsync(newUser, "Admin"); // or "Employee" etc.
+
+                    // ✅ Link Google login to the user
+                    await userManager.AddLoginAsync(newUser, info);
+
+                    // ✅ Sign in and redirect
+                    await signInManager.SignInAsync(newUser, isPersistent: false);
+                    return RedirectToAction("Index", "Home", new { area = "Admin" }); // match the role you assigned
+                }
+                else
+                {
+                    // Show registration error
+                    foreach (var error in createResult.Errors)
+                        ModelState.AddModelError("", error.Description);
+                    return View("Register");
+                }
+            }
+
+            // ✅ If user exists by email but not linked, link it
+            await userManager.AddLoginAsync(userByEmail, info);
+            await signInManager.SignInAsync(userByEmail, isPersistent: false);
+
+            var userRole = (await userManager.GetRolesAsync(userByEmail)).FirstOrDefault();
+            if (userRole == "Admin")
+                return RedirectToAction("Index", "Home", new { area = "Admin" });
+            else if (userRole == "Company")
+                return RedirectToAction("Index", "Home", new { area = "Company2" });
+            else if (userRole == "Employee")
+                return RedirectToAction("Index", "Home", new { area = "Employee" });
+
+            return RedirectToAction("Index", "Home");
         }
-
-
+      
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Account", new { area = "Identity" });
+            return RedirectToAction("index", "Home", new { area = "Company" });
         }
         [HttpGet]
         public async Task<IActionResult> Profile()
@@ -311,7 +373,20 @@ namespace InternalTraining.Areas.Identity.Controllers
                     // Update user in DB
                     await userManager.UpdateAsync(user);
 
-                    return RedirectToAction("Index", "Home", new { area = "Admin" });
+                    var role = (await userManager.GetRolesAsync(user)).FirstOrDefault(); ;
+                    if (role == "Admin")
+                    {
+                        return RedirectToAction("Index", "Home", new { area = "Admin" });
+                    }
+                    else if (role == "Company")
+                    {
+                        return RedirectToAction("Index", "Home", new { area = "Company2" });
+                    }
+                    else if (role == "Employee")
+                    {
+                        return RedirectToAction("Index", "Home", new { area = "Employee" });
+                    }
+                   
                 }
             }
 
@@ -374,6 +449,7 @@ namespace InternalTraining.Areas.Identity.Controllers
             var result = await userManager.ResetPasswordAsync(user, resetPasswordVm.Token, resetPasswordVm.ConfirmPassword);
             if (result.Succeeded)
             {
+                
                 return RedirectToAction("ResetPasswordConfirmation");
             }
             foreach (var error in result.Errors)

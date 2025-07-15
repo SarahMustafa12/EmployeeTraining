@@ -1,0 +1,39 @@
+﻿.bg-gradient-primary {
+    background-color: #143d60 !important;
+    background-image: none !important;
+    background-size: cover !important;
+}
+
+
+.btn-primary {
+    color: #fff !important;
+    background-color: #143d60 !important;
+    border-color: #F8F5E9 !important;
+}
+.text-primary {
+    color: #143d60 !important;
+}
+.text-gray-800 {
+    color: #143d60 !important;
+}
+table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #143d60 !important;
+}
+
+.topbar .dropdown-list .dropdown-header {
+    background-color: #143d60 !important;
+    border: 1px solid #fff !important;
+    padding-top: .75rem !important;
+    padding-bottom: .75rem !important;
+    color: #fff !important;
+}
+
+.page-link {
+  
+    color: #143d60 !important;
+    
+}
+
+

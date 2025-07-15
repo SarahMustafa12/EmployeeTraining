@@ -40,10 +40,12 @@ namespace InternalTraining.Models
         public ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();
 
         [ValidateNever]
-        public ICollection<CompanyCourse> CompanyCourses { get; set; } = new List<CompanyCourse>();
+        public ICollection<BookingCourse> CompanyCourses { get; set; } = new List<BookingCourse>();
 
         [ValidateNever]
         public ICollection<EmployeeProgress> Progresses { get; set; } = new List<EmployeeProgress>();
+        [ValidateNever]
+        public ICollection<EmployeeCourse> EmployeeCourses { get; set; }
     }
 
 }

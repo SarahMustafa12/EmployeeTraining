@@ -56,13 +56,13 @@
                         <li><a href="/Admin/Home/Index">Admin Dashboard</a></li>
                     }
                    
-                    <li><a href="about.html">About</a></li>@* 
+                    <li><a href="/Company/Home/About">About</a></li>@* 
                     <li><a href="courses.html">Courses</a></li> *@
                     <li><a href="/Company/Home/Courses">Courses</a></li>
                     <li><a href="trainers.html">Trainers</a></li>
-                    <li><a href="events.html">Events</a></li>
-                    <li><a href="pricing.html">Pricing</a></li>
-                    <li class="dropdown">
+@*                     <li><a href="events.html">Events</a></li>
+ *@                    <li><a href="/Company/Home/Pricing">Pricing</a></li>
+                   @*  <li class="dropdown">
                         <a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
                         <ul>
                             <li><a href="#">Dropdown 1</a></li>
@@ -80,13 +80,32 @@
                             <li><a href="#">Dropdown 3</a></li>
                             <li><a href="#">Dropdown 4</a></li>
                         </ul>
-                    </li>
+                    </li> *@
                     <li><a href="/Company/ContactUs/Index">Contact</a></li>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="dropdown d-none d-lg-block" style="color: #143d60;">
+
+
+                            <a href="#"><span><i class="bi bi-person-circle" style="font-size: 1.5rem; color: #143d60;"></i></span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                            <ul>
+                                <li><a href="/Company/Profile">Welcome @User.Identity.Name</a></li>
+                                <li><a href="/Identity/Account/Logout">Logout</a></li>
+                            </ul>
+
+
+                        </li>
+                    }
+                    else
+                    {
+                        <a class="btn-getstarted" href="/Identity/Account/Login">Login</a>
+                    }
+                 
                 </ul>
                 <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
             </nav>
 
-            <a class="btn-getstarted" href="/Identity/Account/Login">Login</a>
+      @*       <a class="btn-getstarted" href="/Identity/Account/Login">Login</a> *@
 
         </div>
     </header>

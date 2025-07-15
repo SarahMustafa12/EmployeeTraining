@@ -124,10 +124,10 @@ namespace InternalTraining.Areas.Admin.Controllers
             exam.Questions = questions;
 
             var allCourses = unitOfWork.Courses.Get().ToList();
-            var allChapters = unitOfWork.Chapters.Get().ToList();
+            var allChapters = unitOfWork.Chapters.Get(e=>e.Exam == null || e.Exam.Id == id).ToList();
 
             ViewBag.Courses = allCourses;
-            ViewBag.Chapters = unitOfWork.Chapters.Get().ToList();
+            ViewBag.Chapters = allChapters;
 
             return View(exam);
         }

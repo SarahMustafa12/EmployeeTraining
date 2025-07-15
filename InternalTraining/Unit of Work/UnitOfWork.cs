@@ -28,8 +28,27 @@ namespace InternalTraining.Unit_of_Work
         public IRepository<Question> Questions { get; private set; }
         public IRepository<Option> Options { get; private set; }
         public IRepository<Cart> Carts { get; private set; }
+        public IRepository<CompanyUser> CompanyUsers { get; private set; }
+        public IRepository<EmployeeUser> EmployeeUsers { get; private set; }
+
+
         public IRepository<FirstPayment> FirstPayments { get; private set; }
         public IRepository<BookingCourse> BookingCourses { get; private set; }
+        public IRepository<EmployeeCourse> EmployeeCourses { get; private set; }
+
+        public IRepository<CourseInvitation> CourseInvitations { get; private set; }
+        public IRepository<SecondPayment> SecondPayments { get; private set; }
+
+        public IRepository<CompanyContactUs> CompnanyContactsUs { get; private set; }
+
+        public IRepository<ApplicationUser> ApplicationUsers { get; private set; }
+
+<<<<<<< HEAD
+        public IRepository<EmployeeLessonProgress> EmployeeLessonsProgress { get; private set; }
+        public IRepository<EmployeeChapterExam> EmployeeChaptersExam { get; private set; }
+
+=======
+>>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
 
         public UnitOfWork(ApplicationDbContext _context)
         {
@@ -47,7 +66,19 @@ namespace InternalTraining.Unit_of_Work
             Carts = new Repository<Cart>(_context);
             FirstPayments = new Repository<FirstPayment>(_context);
             BookingCourses = new Repository<BookingCourse>(_context);
+            CompanyUsers = new Repository<CompanyUser>(_context);
+            EmployeeUsers = new Repository<EmployeeUser>(_context);
+            EmployeeCourses = new Repository<EmployeeCourse>(_context);
+            CourseInvitations = new Repository<CourseInvitation>(_context);
+            SecondPayments = new Repository<SecondPayment>(_context);
+            CompnanyContactsUs = new Repository<CompanyContactUs>(_context);
+            ApplicationUsers = new Repository<ApplicationUser>(_context);
+<<<<<<< HEAD
+            EmployeeLessonsProgress = new Repository<EmployeeLessonProgress>(_context);
+            EmployeeChaptersExam = new Repository<EmployeeChapterExam>(_context);
+=======
 
+>>>>>>> cc9158b4a66e575c1b08ffb5cae51454e7b951c5
         }
         public void Commit()
         {

@@ -96,7 +96,6 @@ namespace InternalTraining.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-
             var chapter = _unitOfWork.Chapters.GetOne(e => e.Id == id);
             if (chapter == null)
                 return RedirectToAction("Error", "Home");

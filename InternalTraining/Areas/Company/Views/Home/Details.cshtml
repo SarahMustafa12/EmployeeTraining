@@ -36,25 +36,8 @@
 
                         <ul class="list-unstyled mt-3">
                             <li><strong>Number of Chapters:</strong> @(Model.Chapters?.Count ?? 0)</li>
-                            <li>
-                                <strong>Price:</strong>
-                                @if (Model.Price == 0)
-                                {
-                                    <span class="text-success">Free</span>
-                                }
-                                else
-                                {
-                                    <span style="color: #143D60;">$@Model.Price.ToString("0.00")</span>
-                                }
-                            </li>
+                            @* <li><strong>Number of Chapters:</strong> @(Model.NumberOfChapters)</li> *@
                         </ul>
-
-                        <!-- Enroll Now button (only if course has price or is free) -->
-                        <a href="@Url.Action("Enroll", "Home", new { area = "Company", id = Model.Id })"
-                           class="btn btn-primary mt-3"
-                           style="background-color: #143D60; border-color: #143D60;">
-                            Enroll Now
-                        </a>
 
                         @if (Model.Chapters != null && Model.Chapters.Any())
                         {
@@ -85,7 +68,6 @@
                         {
                             <p class="mt-4"><em>No chapters available.</em></p>
                         }
-
 
                         <a href="@Url.Action("Index", "Home", new { area = "Company" })"
                            class="btn btn-secondary mt-4"

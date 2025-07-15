@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public string CompanyId { get; set; }
-        public Company Company { get; set; } = null!;
+        public CompanyUser CompanyUser { get; set; } = null!;
         public decimal Amount { get; set; }
         public DateTime Date { get; set; }
         public bool Status { get; set; }

@@ -1,0 +1,683 @@
+﻿@* <div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Invite Employee to Course</h1>
+    </div>
+
+    <!-- Invite Form Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Send Course Invitation</h6>
+        </div>
+        <div class="card-body">
+            <form method="post" action="/Admin/Invite/Send">
+                <div class="form-group">
+                    <label for="employeeEmail">Employee Email</label>
+                    <input type="email" class="form-control" id="employeeEmail" name="employeeEmail" placeholder="employee@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="courseSelect">Select Course</label>
+                    <select class="form-control" id="courseSelect" name="courseId" required>
+                        <option value="">-- Select a Course --</option>
+                        <option value="1">Cybersecurity Basics</option>
+                        <option value="2">ASP.NET Core Beginner</option>
+                        <option value="3">Data Structures Advanced</option>
+                        <!-- Populate this dynamically in Razor if needed -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="customMessage">Optional Message</label>
+                    <textarea class="form-control" id="customMessage" name="message" rows="3" placeholder="Include any custom message..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send Invitation
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+    *@
+
+@* @model CourseInvitation
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Invite Employees to Course</h1>
+    </div>
+
+    <!-- Invite Form Card -->
+    <div class="card shadow mb-4">
+       
+        <div class="card-body">
+            <form method="post" action="/AdminCompany/Employee/SendInvitaion">
+                <!-- Course Dropdown -->
+                <div class="form-group">
+                    <label for="courseSelect">Selected Course</label>
+                    <input type="text" class="form-control" name="courseId" value="@ViewBag.Course.Course.Name" disabled>
+                   
+                </div>
+                <!-- Email Inputs -->
+                <div id="emailFields">
+                    <div class="form-group email-entry">
+                        <label for="employeeEmail0">Employee Email</label>
+                        <input type="email" class="form-control" name="employeeEmails[]" placeholder="employee@example.com" required>
+                    </div>
+                </div>
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Send Course Invitation</h6>
+                    <button type="button" class="btn btn-sm btn-success" onclick="addEmailField()">
+                        <i class="fas fa-plus"></i> Invite Employee
+                    </button>
+                </div>
+              
+
+                <!-- Optional Message -->
+                <div class="form-group">
+                    <label for="customMessage">Optional Message</label>
+                    <textarea class="form-control" id="customMessage" name="Message" rows="3" placeholder="Include any custom message..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send Invitations
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Script to Add Email Fields -->
+<script>
+    let emailCount = 1;
+    function addEmailField() {
+        const container = document.getElementById('emailFields');
+        const div = document.createElement('div');
+        div.classList.add('form-group', 'email-entry');
+        div.innerHTML = `
+            <label for="employeeEmail${emailCount}">Employee Email</label>
+            <div class="d-flex">
+                <input type="email" class="form-control" name="employeeEmails[]" placeholder="employee@example.com" required>
+                <button type="button" class="btn btn-danger ml-2" onclick="removeEmailField(this)">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        container.appendChild(div);
+        emailCount++;
+    }
+
+    function removeEmailField(button) {
+        const field = button.closest('.email-entry');
+        field.remove();
+    }
+</script>
+
+ *@
+@*  @model IEnumerable<CourseInvitation>
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Invite Employees to Course</h1>
+    </div>
+
+    <!-- Invite Form Card -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="post" action="/AdminCompany/Employee/SendInvitaion/@ViewBag.Course.CourseId">
+                <!-- Validation Summary -->
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <!-- Course Display -->
+                <div class="form-group">
+                    <label for="courseSelect">Selected Course</label>
+                    <input type="text" class="form-control" name="courseId" value="@ViewBag.Course?.Course?.Name" disabled>
+                </div>
+                <input type="hidden" name="courseId" value="@ViewBag.Course.CourseId" />
+
+                <!-- Email Inputs -->
+                <div id="emailFields">
+                    <div class="form-group email-entry">
+                        <label for="employeeEmail0">Employee Email</label>
+                        <input type="email" class="form-control" name="employeeEmails[]" placeholder="employee@example.com" required>
+                     
+                    </div>
+                </div>
+
+                <!-- Add Email Button -->
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Send Course Invitation</h6>
+                    <button type="button" class="btn btn-sm btn-success" onclick="addEmailField()">
+                        <i class="fas fa-plus"></i> Invite Employee
+                    </button>
+                </div>
+
+                <!-- Optional Message -->
+                <div class="form-group">
+                    <label for="customMessage">Optional Message</label>
+                    <textarea class="form-control" id="customMessage" name="Message" rows="3" placeholder="Include any custom message..."></textarea>
+               
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send Invitations
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Script to Add Email Fields -->
+<script>
+    let emailCount = 1;
+    function addEmailField() {
+        const container = document.getElementById('emailFields');
+        const div = document.createElement('div');
+        div.classList.add('form-group', 'email-entry');
+        div.innerHTML = `
+            <label for="employeeEmail${emailCount}">Employee Email</label>
+            <div class="d-flex">
+                <input type="email" class="form-control" name="employeeEmails[]" placeholder="employee@example.com" required>
+                <button type="button" class="btn btn-danger ml-2" onclick="removeEmailField(this)">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <span class="text-danger" asp-validation-for="employeeEmails"></span>
+        `;
+        container.appendChild(div);
+        emailCount++;
+    }
+
+    function removeEmailField(button) {
+        const field = button.closest('.email-entry');
+        field.remove();
+    }
+</script>
+ *@
+
+@* @model IEnumerable<CourseInvitation>
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Invite Employees to Course</h1>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="post" action="/AdminCompany/Employee/SendInvitaion/@ViewBag.Course.CourseId" onsubmit="copyMessageToAll()">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <!-- Course Display -->
+                <div class="form-group">
+                    <label>Selected Course</label>
+                    <input type="text" class="form-control" value="@ViewBag.Course?.Course?.Name" disabled>
+                    <input type="hidden" name="courseId" value="@ViewBag.Course.CourseId" />
+                </div>
+
+                <!-- Email Fields -->
+                <div id="emailFields">
+                    <div class="form-group email-entry">
+                        <label>Employee Email</label>
+                        <div class="d-flex">
+                            <input type="email" class="form-control" name="courseInvitations[0].Email" placeholder="employee@example.com" required>
+                            <button type="button" class="btn btn-danger ml-2" onclick="removeEmailField(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <input type="hidden" name="courseInvitations[0].CourseId" value="@ViewBag.Course.CourseId" />
+                        <input type="hidden" name="courseInvitations[0].Message" id="hiddenMessage0" />
+                    </div>
+                </div>
+
+                <!-- Add Email Button -->
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Send Course Invitation</h6>
+                    <button type="button" class="btn btn-sm btn-success" onclick="addEmailField()">
+                        <i class="fas fa-plus"></i> Invite Another
+                    </button>
+                </div>
+
+                <!-- Custom Message -->
+                <div class="form-group">
+                    <label for="customMessage">Optional Message</label>
+                    <textarea class="form-control" id="customMessage" rows="3" placeholder="Include any custom message..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send Invitations
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    let emailCount = 1;
+
+    function addEmailField() {
+        const container = document.getElementById('emailFields');
+        const div = document.createElement('div');
+        div.classList.add('form-group', 'email-entry');
+        div.innerHTML = `
+            <label>Employee Email</label>
+            <div class="d-flex">
+                <input type="email" class="form-control" name="courseInvitations[${emailCount}].Email" placeholder="employee@example.com" required>
+                <button type="button" class="btn btn-danger ml-2" onclick="removeEmailField(this)">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <input type="hidden" name="courseInvitations[${emailCount}].CourseId" value="@ViewBag.Course.CourseId" />
+            <input type="hidden" name="courseInvitations[${emailCount}].Message" id="hiddenMessage${emailCount}" />
+        `;
+        container.appendChild(div);
+        emailCount++;
+    }
+
+    function removeEmailField(button) {
+        const field = button.closest('.email-entry');
+        field.remove();
+    }
+
+    function copyMessageToAll() {
+        const message = document.getElementById('customMessage').value;
+        for (let i = 0; i < emailCount; i++) {
+            const hidden = document.getElementById(`hiddenMessage${i}`);
+            if (hidden) hidden.value = message;
+        }
+    }
+</script>
+ *@
+@*  @model IEnumerable<CourseInvitation>
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Invite Employees to Course</h1>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="post" action="/AdminCompany/Employee/SendInvitaion/@ViewBag.Course.CourseId" onsubmit="copyMessageToAll()">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <!-- Course Display -->
+                <div class="form-group">
+                    <label>Selected Course</label>
+                    <input type="text" class="form-control" value="@ViewBag.Course?.Course?.Name" disabled>
+                    <input type="hidden" name="courseId" value="@ViewBag.Course.CourseId" />
+                </div>
+
+                <!-- Email Fields -->
+                <div id="emailFields">
+                    <div class="form-group email-entry">
+                        <label>Employee Email</label>
+                        <div class="d-flex">
+                            <input type="email" class="form-control" name="courseInvitations[0].Email" placeholder="employee@example.com" required>
+                            <button type="button" class="btn btn-danger ml-2" onclick="removeEmailField(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <span class="text-danger field-validation-valid" data-valmsg-for="courseInvitations[0].Email" data-valmsg-replace="true"></span>
+
+                        <input type="hidden" name="courseInvitations[0].CourseId" value="@ViewBag.Course.CourseId" />
+                        <input type="hidden" name="courseInvitations[0].Message" id="hiddenMessage0" />
+                    </div>
+                </div>
+
+                <!-- Add Email Button -->
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Send Course Invitation</h6>
+                    <button type="button" class="btn btn-sm btn-success" onclick="addEmailField()">
+                        <i class="fas fa-plus"></i> Invite Another
+                    </button>
+                </div>
+
+                <!-- Custom Message -->
+                <div class="form-group">
+                    <label for="customMessage">Optional Message</label>
+                    <textarea class="form-control" id="customMessage" rows="3" placeholder="Include any custom message..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send Invitations
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        let emailCount = 1;
+
+        function addEmailField() {
+            const container = document.getElementById('emailFields');
+            const div = document.createElement('div');
+            div.classList.add('form-group', 'email-entry');
+            div.innerHTML = `
+                <label>Employee Email</label>
+                <div class="d-flex">
+                    <input type="email" class="form-control" name="courseInvitations[${emailCount}].Email" placeholder="employee@example.com" required>
+                    <button type="button" class="btn btn-danger ml-2" onclick="removeEmailField(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                  <span class="text-danger field-validation-valid"
+        data-valmsg-for="courseInvitations[${emailCount}].Email"
+        data-valmsg-replace="true"></span>
+
+                <input type="hidden" name="courseInvitations[${emailCount}].CourseId" value="@ViewBag.Course.CourseId" />
+                <input type="hidden" name="courseInvitations[${emailCount}].Message" id="hiddenMessage${emailCount}" />
+            `;
+            container.appendChild(div);
+            emailCount++;
+        }
+
+        function removeEmailField(button) {
+            const field = button.closest('.email-entry');
+            field.remove();
+        }
+
+        function copyMessageToAll() {
+            const message = document.getElementById('customMessage').value;
+            for (let i = 0; i < emailCount; i++) {
+                const hidden = document.getElementById(`hiddenMessage${i}`);
+                if (hidden) hidden.value = message;
+            }
+        }
+    </script>
+}
+ *@
+
+@* @model IEnumerable<CourseInvitation>
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Invite Employees to Course</h1>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <!-- ✅ Display all validation errors here -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger text-danger mb-3">
+                    <ul>
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <form method="post" action="/AdminCompany/Employee/SendInvitaion/@ViewBag.Course.CourseId" onsubmit="copyMessageToAll()">
+
+
+                <!-- Course Display -->
+                <div class="form-group">
+                    <label>Selected Course</label>
+                    <input type="text" class="form-control" value="@ViewBag.Course?.Course?.Name" disabled>
+                    <input type="hidden" name="courseId" value="@ViewBag.Course.CourseId" />
+                </div>
+
+                <!-- Email Fields -->
+                <div id="emailFields">
+                    <div class="form-group email-entry">
+                        <label>Employee Email</label>
+                        <div class="d-flex">
+                            <input type="email"
+                                   class="form-control"
+                                   name="courseInvitations[0].Email"
+                                   placeholder="employee@example.com"
+                                   required
+                                   data-val="true"
+                                   data-val-required="Email is required"
+                                   data-val-email="Invalid email format" />
+                            <!-- No delete button for first input -->
+                        </div>
+                     
+                        <input type="hidden" name="courseInvitations[0].CourseId" value="@ViewBag.Course.CourseId" />
+                        <input type="hidden" name="courseInvitations[0].Message" id="hiddenMessage0" />
+                    </div>
+                </div>
+
+                <!-- Add Email Button -->
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Send Course Invitation</h6>
+                    <button type="button" class="btn btn-sm btn-success" onclick="addEmailField()">
+                        <i class="fas fa-plus"></i> Invite Another
+                    </button>
+                </div>
+
+                <!-- Custom Message -->
+                <div class="form-group">
+                    <label for="customMessage">Optional Message</label>
+                    <textarea class="form-control" id="customMessage" rows="3" placeholder="Include any custom message..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send Invitations
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        let emailCount = 1;
+
+        function addEmailField() {
+            const container = document.getElementById('emailFields');
+            const div = document.createElement('div');
+            div.classList.add('form-group', 'email-entry');
+
+            div.innerHTML = `
+                <label>Employee Email</label>
+                <div class="d-flex">
+                    <input type="email"
+                           class="form-control"
+                           name="courseInvitations[${emailCount}].Email"
+                           placeholder="employee@example.com"
+                           required
+                           data-val="true"
+                           data-val-required="Email is required"
+                           data-val-email="Invalid email format" />
+                    <button type="button" class="btn btn-danger ml-2" onclick="removeEmailField(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+
+
+
+                <input type="hidden" name="courseInvitations[${emailCount}].CourseId" value="@ViewBag.Course.CourseId" />
+                <input type="hidden" name="courseInvitations[${emailCount}].Message" id="hiddenMessage${emailCount}" />
+            `;
+
+            container.appendChild(div);
+            $.validator.unobtrusive.parse(div); // Enables validation
+            emailCount++;
+        }
+
+        function removeEmailField(button) {
+            const field = button.closest('.email-entry');
+            field.remove();
+        }
+
+        function copyMessageToAll() {
+            const message = document.getElementById('customMessage').value;
+            for (let i = 0; i < emailCount; i++) {
+                const hidden = document.getElementById(`hiddenMessage${i}`);
+                if (hidden) hidden.value = message;
+            }
+        }
+    </script>
+}
+ *@ 
+
+@model IEnumerable<CourseInvitation>
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Invite Employees to Course</h1>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <!-- ✅ Display validation errors -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger text-danger mb-3">
+                    <ul>
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <form method="post" action="/AdminCompany/Employee/SendInvitaion/@ViewBag.Course.CourseId" onsubmit="copyMessageToAll()">
+                <!-- Course Display -->
+                <div class="form-group">
+                    <label>Selected Course</label>
+                    <input type="text" class="form-control" value="@ViewBag.Course?.Course?.Name" disabled>
+                    <input type="hidden" name="courseId" value="@ViewBag.Course.CourseId" />
+                </div>
+
+                <!-- Email Fields -->
+                <div id="emailFields">
+                    @if (Model != null && Model.Any())
+                    {
+                        var index = 0;
+                        foreach (var item in Model)
+                        {
+                            <div class="form-group email-entry">
+                                <label>Employee Email</label>
+                                <div class="d-flex">
+                                    <input type="email"
+                                           class="form-control"
+                                           name="courseInvitations[@index].Email"
+                                           value="@item.Email"
+                                           required
+                                           data-val="true"
+                                           data-val-required="Email is required"
+                                           data-val-email="Invalid email format" />
+                                    @if (index > 0)
+                                    {
+                                        <button type="button" class="btn btn-danger ml-2" onclick="removeEmailField(this)">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    }
+                                </div>
+                                <input type="hidden" name="courseInvitations[@index].CourseId" value="@item.CourseId" />
+                                <input type="hidden" name="courseInvitations[@index].Message" id="hiddenMessage@index" value="@item.Message" />
+                            </div>
+                            index++;
+                        }
+                    }
+                    else
+                    {
+                        <div class="form-group email-entry">
+                            <label>Employee Email</label>
+                            <div class="d-flex">
+                                <input type="email"
+                                       class="form-control"
+                                       name="courseInvitations[0].Email"
+                                       placeholder="employee@example.com"
+                                       required
+                                       data-val="true"
+                                       data-val-required="Email is required"
+                                       data-val-email="Invalid email format" />
+                                <!-- No delete button for first input -->
+                            </div>
+                            <input type="hidden" name="courseInvitations[0].CourseId" value="@ViewBag.Course.CourseId" />
+                            <input type="hidden" name="courseInvitations[0].Message" id="hiddenMessage0" />
+                        </div>
+                    }
+                </div>
+
+                <!-- Add Email Button -->
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Send Course Invitation</h6>
+                    <button type="button" class="btn btn-sm btn-success" onclick="addEmailField()">
+                        <i class="fas fa-plus"></i> Invite Another
+                    </button>
+                </div>
+
+                <!-- Custom Message -->
+                <div class="form-group">
+                    <label for="customMessage">Optional Message</label>
+                    <textarea class="form-control" id="customMessage" rows="3" placeholder="Include any custom message..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send Invitations
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Initialize with count of email inputs already rendered
+        let emailCount = @((Model?.Count() ?? 1));
+
+        function addEmailField() {
+            const container = document.getElementById('emailFields');
+            const div = document.createElement('div');
+            div.classList.add('form-group', 'email-entry');
+
+            div.innerHTML = `
+                <label>Employee Email</label>
+                <div class="d-flex">
+                    <input type="email"
+                           class="form-control"
+                           name="courseInvitations[${emailCount}].Email"
+                           placeholder="employee@example.com"
+                           required
+                           data-val="true"
+                           data-val-required="Email is required"
+                           data-val-email="Invalid email format" />
+                    <button type="button" class="btn btn-danger ml-2" onclick="removeEmailField(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <input type="hidden" name="courseInvitations[${emailCount}].CourseId" value="@ViewBag.Course.CourseId" />
+                <input type="hidden" name="courseInvitations[${emailCount}].Message" id="hiddenMessage${emailCount}" />
+            `;
+
+            container.appendChild(div);
+            $.validator.unobtrusive.parse(div); // Re-parse validation
+            emailCount++;
+        }
+
+        function removeEmailField(button) {
+            const field = button.closest('.email-entry');
+            field.remove();
+        }
+
+        function copyMessageToAll() {
+            const message = document.getElementById('customMessage').value;
+            for (let i = 0; i < emailCount; i++) {
+                const hidden = document.getElementById(`hiddenMessage${i}`);
+                if (hidden) hidden.value = message;
+            }
+        }
+    </script>
+}

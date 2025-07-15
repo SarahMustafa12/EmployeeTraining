@@ -1,4 +1,4 @@
-﻿namespace E_TicketMovies.Email_Sender
+﻿namespace InternalTraining.Email_Sender
 {
     public interface IEmailSender
     {

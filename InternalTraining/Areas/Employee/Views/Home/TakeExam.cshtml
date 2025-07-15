@@ -1,0 +1,86 @@
+﻿@model InternalTraining.Models.Exam
+@using InternalTraining.Data.Enums
+
+@{
+    ViewData["Title"] = "Take Exam";
+    int questionGrade = 2;
+}
+
+
+<form method="post" asp-action="SubmitExam" asp-controller="Home" asp-route-examId="@Model.Id">
+    <div class="container-fluid">
+
+        <!-- 🧾 Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 text-gray-800">Take Exam: @Model.Name</h1>
+            <a href="/Employee/Home/CourseContent?id=@Model.Chapter?.CourseId" class="btn btn-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i> Back to Course
+            </a>
+        </div>
+
+        <!-- 📘 Exam Info -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Exam Information</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Chapter:</strong> @Model.Chapter?.Name</p>
+                <p><strong>Course:</strong> @Model.Chapter?.Course?.Name</p>
+                <p><strong>Total Questions:</strong> @Model.Questions?.Count</p>
+                <p><strong>Each Question Grade:</strong> @questionGrade</p>
+            </div>
+        </div>
+
+        <!-- ❓ Questions List -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Answer All Questions</h6>
+            </div>
+            <div class="card-body">
+                @if (Model.Questions != null && Model.Questions.Any())
+                {
+                    <ol class="pl-3">
+                        @for (int i = 0; i < Model.Questions.Count(); i++)
+                        {
+                            var question = Model.Questions.ElementAt(i);
+                            <li class="mb-4">
+                                <p><strong>@(i + 1). @question.Text</strong></p>
+
+                                @if (question.QuestionType == QuestionType.ChooseOne)
+                                {
+                                    for (int j = 0; j < question.Options.Count; j++)
+                                    {
+                                        var option = question.Options[j];
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="Answers[@question.Id]" value="@j" id="q@question.Id-o@j" required />
+                                            <label class="form-check-label" for="q@question.Id-o@j">
+                                                @option.Text
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                                else if (question.QuestionType == QuestionType.TrueFalse)
+                                {
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Answers[@question.Id]" value="0" id="q@question.Id-true" required />
+                                        <label class="form-check-label" for="q@question.Id-true">True</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Answers[@question.Id]" value="1" id="q@question.Id-false" required />
+                                        <label class="form-check-label" for="q@question.Id-false">False</label>
+                                    </div>
+                                }
+                            </li>
+                        }
+                    </ol>
+
+                    <button type="submit" class="btn btn-success mt-3">Submit Exam</button>
+                }
+                else
+                {
+                    <p class="text-muted"><em>No questions available.</em></p>
+                }
+            </div>
+        </div>
+    </div>
+</form>

@@ -14,6 +14,7 @@ namespace InternalTraining.Models.ViewModel
         public string Password { get; set; }
 
         public bool RememberMe { get; set; }
+
         public string UserType { get; set; }
 
         public List<SelectListItem> UserTypes { get; set; } = new List<SelectListItem>

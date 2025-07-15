@@ -77,9 +77,37 @@
 </html> *@
 
 @model InternalTraining.Models.ViewModel.ProfileVm
-
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
 @{
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    if (SignInManager.IsSignedIn(User))
+    {
+        var user = await UserManager.GetUserAsync(User);
+        var roles = (await UserManager.GetRolesAsync(user)).FirstOrDefault();
+
+        if (roles =="Admin")
+        {
+            Layout = "~/Views/Shared/_AdminLayout.cshtml";
+        }
+        else if (roles == "Company")
+        {
+            Layout = "~/Views/Shared/_AdminCompanyLayout.cshtml";
+        }
+        else if (roles == "Employee")
+        {
+            Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
+        }
+        else
+        {
+            Layout = null; // Or redirect or show access denied
+        }
+    }
+    else
+    {
+        Layout = null; // Or redirect to login
+    }
+    // Layout = "~/Views/Shared/_AccountLayout.cshtml";
 }
 
     <div class="container">

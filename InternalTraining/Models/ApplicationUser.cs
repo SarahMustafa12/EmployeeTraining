@@ -9,9 +9,12 @@ namespace InternalTraining.Models
         public string? ProfilePicturePath { get; set; }  // Path to profile picture
 
         // Relationships
-        public Company Company { get; set; }
+        public CompanyUser? CompanyUser { get; set; }
 
-        public Employee Employee { get; set; } 
+        public EmployeeUser? EmployeeUser { get; set; }
+
+        public ICollection<CompanyContactUs> CompanyContactsUs { get; set; }
+
 
     }
 

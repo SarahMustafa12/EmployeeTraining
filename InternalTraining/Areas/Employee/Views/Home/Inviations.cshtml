@@ -1,0 +1,92 @@
+﻿@model IEnumerable<CourseInvitation>
+
+<div class="row justify-content-start" id="infoMessage" style="display: none;">
+    <div class="col-md-6">
+        <div class="text-center p-3 rounded mb-4" style="background-color: #143d60; color: white;">
+            Info message here
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h1 class="h3 text-gray-800">All Inviations</h1>
+      
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Invitaion List</h6>
+          @*   <a href="/Admin/CompanyContact/Index?notAnsw=true" class="btn btn-primary btn-icon-split">
+                <h6 class="text">Contact</h6>
+            </a>
+            <a href="/Admin/CompanyContact/Index?Answerd=true" class="btn btn-primary btn-icon-split">
+                <h6 class="text">Answered</h6>
+            </a> *@
+            <form method="get" action="/Admin/CompanyContact/Index" class="form-inline">
+                <div class="input-group">
+                    <input type="text" class="form-control bg-light small" name="query" placeholder="Search for..." aria-label="Search" style="border: 2px solid #fff;">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search fa-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Example Row (Repeat as needed) -->
+                        @foreach(var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Course.Name</td>
+                                <td>
+                                    @if(item.IsAccepted == false)
+                                    {
+                                        <form action="/Employee/Home/AcceptInvitaion/@item.Id" method="post" class="d-inline">
+                                            <input type="hidden" name="Id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fas fa-check-circle"></i> Accept
+                                            </button>
+                                        </form>
+                                    }
+                                   else
+                                   {
+                                        <button type="button" class="btn btn-success btn-sm" disabled>
+                                            <i class="fas fa-check-circle" ></i> Accepted
+                                        </button>
+                                   }
+                                    
+                                </td>
+                            </tr>
+                        }
+                      
+                        <!-- Repeat ends -->
+                    </tbody>
+                </table>
+            </div>
+
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-end">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="/Admin/Category/Index?page=1">1</a></li>
+                    <li class="page-item"><a class="page-link" href="/Admin/Category/Index?page=2">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
